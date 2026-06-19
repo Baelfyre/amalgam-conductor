@@ -1,0 +1,10 @@
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.codex/
+.agents/
+AGENTS.md
+CLAUDE.md
+*.local.md
+*.tmp

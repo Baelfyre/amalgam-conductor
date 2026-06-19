@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cipher Meister"
+  short_description: "Review security and privacy risks defensively"
+  default_prompt: "Use $cipher-meister to review security and privacy risks using only available evidence and defensive recommendations."
