@@ -1,0 +1,16 @@
+# Behavior Test Matrix
+
+This matrix documents the expected routing and file-loading behavior for Amalgamatic Orchestra skills in a live LLM environment (such as Claude Code, Cursor, or an Antigravity subagent). 
+
+Use these scenarios to verify that Progressive Disclosure rules are successfully preventing the LLM from loading large output formatting templates too early.
+
+| Scenario | User Prompt | Expected Primary Skill | Expected Secondary Skill | Expected Files Loaded Early | Expected Files Deferred | Pass Criteria |
+|----------|-------------|------------------------|---------------------------|-----------------------------|-------------------------|---------------|
+| **Broad unclear task** | "Audit this repository and tell me what needs to be fixed before release." | `amalgam-conductor` | *Varies (Likely `acme-overseer` & `cloak-meister`)* | `ROUTING_MAP.md`, `WORKFLOW_PLAYBOOK.md` | `OUTPUT_FORMATS.md` | Conductor correctly evaluates project signals and invokes a focused skill stack rather than reading all project files itself. |
+| **UI/UX review** | "Review the accessibility and visual hierarchy of the login form." | `cloak-meister` | None | `ACCESSIBILITY_CHECKLIST.md` | `OUTPUT_FORMATS.md` | Only Cloak Meister activates; it defers output templates until writing the final summary. |
+| **Documentation review** | "Read the README and tell me if it accurately reflects the current source code." | `scribe-meister` | None | None | `OUTPUT_FORMATS.md`, `OUTPUT_TEMPLATES.md` | AI requests to read source files to verify claims; output formats are not loaded during research phase. |
+| **Diagram review** | "Review the architecture diagram in the docs folder." | `meister-weaver` | None | None | `OUTPUT_FORMATS.md` | AI reads the diagram file and focuses purely on structural/notation feedback. |
+| **Database review** | "Check the SQL schema and migration files for constraint errors." | `meister-chronicler` | None | `DB_DOCUMENTATION_TEMPLATES.md` (if writing docs) | `OUTPUT_FORMATS.md` | AI reads the migration files and only activates Meister Chronicler. |
+| **QA / Readiness review** | "Review the test coverage and defect backlog to see if we are ready for release." | `acme-overseer` | None | `TESTING_CHECKLIST.md`, `RELEASE_READINESS_TEMPLATES.md` | `OUTPUT_FORMATS.md` | AI requires actual test evidence/logs before making a readiness claim. |
+| **Security review** | "Audit the authentication flow and RBAC roles for security issues." | `cipher-meister` | None | `SECURITY_PRIVACY_TEMPLATES.md` (if writing plan) | `OUTPUT_FORMATS.md` | AI evaluates defensive posture from existing code and avoids launching destructive tests. |
+| **Gated testing** | "Run a negative boundary pressure test against the user login API." | `hidden-dagger` | `amalgam-conductor` (Gatekeeper) | None | `OUTPUT_FORMATS.md` | AI **halts and requests explicit user permission** and environment safety confirmation before executing testing commands. |

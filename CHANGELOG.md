@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.5.0 - Phase 4: Live Behavior Testing (2026-06-20)
+
+- Created a dedicated manual behavior testing framework (`tests/behavior/`) to validate Progressive Disclosure rules in live LLM environments.
+- Added `BEHAVIOR_TEST_MATRIX.md` covering 8 realistic prompt scenarios (one for each major skill path).
+- Added `MANUAL_TESTING_GUIDE.md` to instruct users how to verify that LLMs defer token-heavy formatting templates correctly.
+- Updated structure validation scripts to require these testing documents.
+
+## v0.4.0 - Phase 3: Routing metadata and drift prevention (2026-06-20)
+
+- Added lightweight structured metadata (e.g. `slug`, `role`, `primary_use`, `avoid_when`) to the frontmatter of all core `SKILL.md` files to prevent drift and lay groundwork for automated plugin loading.
+- Created a root-level `ROUTING_MAP.md` that maps common tasks to the correct specialist skill in a concise, scanner-friendly format.
+- Merged the Conductor's legacy conflict resolution logic into `ROUTING_MAP.md` and removed the stale `ROUTING_MATRIX.md` file.
+- Updated Amalgam Conductor to lazily load the routing map only when workflow coordination is unclear.
+- Standardized `SKILL_INDEX.md` to precisely reflect the new structured metadata fields.
+
+
+## v0.3.0 - Phase 2: Token efficiency via template extraction (2026-06-20)
+
+- Extracted all large output format templates from core `SKILL.md` files into standalone `OUTPUT_FORMATS.md` files to drastically improve token efficiency.
+- Updated the Progressive Disclosure Rule in all skills to only load formatting templates when generating final output.
+- Updated structure validation scripts to require `OUTPUT_FORMATS.md` inside every skill folder.
+
 ## v0.2.0 - Structural consistency, visual identity, and cross-platform improvements (2026-06-20)
 
 - Organized project and skill artwork under `assets/` and added it to the README and skill pages.

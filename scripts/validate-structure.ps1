@@ -5,7 +5,7 @@ param(
 $requiredRoot = @(
     'README.md','LICENSE','.gitignore','CONTRIBUTING.md','CHANGELOG.md',
     'SKILL_INDEX.md','FOUNDATION.md','INSTALLATION.md','LOCAL_ONLY_GUIDE.md',
-    'COMPATIBILITY.md','VALIDATION.md','ROADMAP.md',
+    'COMPATIBILITY.md','VALIDATION.md','ROADMAP.md','ROUTING_MAP.md',
     'assets/logo/orchestra-of-amalgamation.png'
 )
 $skills = @(
@@ -18,6 +18,10 @@ $templates = @(
     'routing-output-template.md','safety-gate-template.md','scorecard-template.md',
     'local-install-template.md'
 )
+$tests = @(
+    'tests/behavior/BEHAVIOR_TEST_MATRIX.md',
+    'tests/behavior/MANUAL_TESTING_GUIDE.md'
+)
 
 $missing = [System.Collections.Generic.List[string]]::new()
 foreach ($file in $requiredRoot) {
@@ -26,6 +30,9 @@ foreach ($file in $requiredRoot) {
 foreach ($skill in $skills) {
     $path = Join-Path $Root "skills/$skill/SKILL.md"
     if (-not (Test-Path -LiteralPath $path)) { $missing.Add("skills/$skill/SKILL.md") }
+
+    $formatPath = Join-Path $Root "skills/$skill/OUTPUT_FORMATS.md"
+    if (-not (Test-Path -LiteralPath $formatPath)) { $missing.Add("skills/$skill/OUTPUT_FORMATS.md") }
 
     $icon = "assets/icons/$skill.png"
     if (-not (Test-Path -LiteralPath (Join-Path $Root $icon))) { $missing.Add($icon) }
@@ -38,10 +45,14 @@ foreach ($template in $templates) {
     $path = Join-Path $Root "templates/$template"
     if (-not (Test-Path -LiteralPath $path)) { $missing.Add("templates/$template") }
 }
+foreach ($test_file in $tests) {
+    $path = Join-Path $Root $test_file
+    if (-not (Test-Path -LiteralPath $path)) { $missing.Add($test_file) }
+}
 
 if ($missing.Count) {
     $missing | ForEach-Object { Write-Error "Missing: $_" }
     exit 1
 }
 
-Write-Output "Structure valid: $($skills.Count) skills, $($adapters.Count) adapters, $($templates.Count) templates."
+Write-Output "Structure valid: $($skills.Count) skills, $($adapters.Count) adapters, $($templates.Count) templates, $($tests.Count) tests."
