@@ -67,6 +67,10 @@ It also does not include private project context, external plugins, or permissio
     <td align="center" width="100"><img src="assets/icons/hidden-dagger.png" alt="Hidden Dagger" width="80" /><br /><b><a href="skills/hidden-dagger/SKILL.md">Hidden Dagger</a></b></td>
     <td><b>Use for:</b> Approved destructive, negative, fuzz, boundary, failure-mode, guardrail, and resilience testing<br /><b>Not for:</b> Automatic, production, or unauthorized testing</td>
   </tr>
+  <tr>
+    <td align="center" width="100"><img src="assets/icons/clockwork-meister.png" alt="Clockwork Meister" width="80" /><br /><b><a href="skills/clockwork-meister/SKILL.md">Clockwork Meister</a></b></td>
+    <td><b>Use for:</b> OOP architecture, layered architecture, system design, structural refactoring, SOLID principles<br /><b>Not for:</b> UI layouts, security boundaries, or writing documentation</td>
+  </tr>
 </table>
 
 See [SKILL_INDEX.md](SKILL_INDEX.md) for the full skill index, activation level, and expected output for each skill.
@@ -147,6 +151,7 @@ Use these prompts to check whether each skill is being interpreted correctly:
 - Acme Overseer: `Use $acme-overseer to assess this test plan, regression evidence, and release readiness.`
 - Cipher Meister: `Use $cipher-meister to review the supplied authentication, RBAC, secrets, and privacy evidence defensively.`
 - Hidden Dagger: `Use $hidden-dagger to create a safety-gated negative-testing plan for this non-production system. Do not execute tests.`
+- Clockwork Meister: `Use $clockwork-meister to review this codebase for OOP principles, layered architecture, and refactoring safety.`
 
 ## Validation
 
