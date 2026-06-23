@@ -8,14 +8,13 @@ Amalgam Conductor is intended to be installed as an official-style plugin:
 agy plugin install https://github.com/Baelfyre/amalgam-conductor
 ```
 
-> **Note:** The current development remote is still `Baelfyre/Amalgamatic-Orchestra` until the repository is officially renamed. You may need to use `https://github.com/Baelfyre/Amalgamatic-Orchestra` for the time being.
 
 ## Clone or download manually
 
 If you prefer not to use the plugin manager, you can still clone the repository:
 
 ```sh
-git clone https://github.com/Baelfyre/Amalgamatic-Orchestra.git amalgam-conductor
+git clone https://github.com/Baelfyre/amalgam-conductor.git
 cd amalgam-conductor
 ```
 

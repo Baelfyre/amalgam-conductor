@@ -96,7 +96,6 @@ Amalgam Conductor can be installed directly as a plugin:
 agy plugin install https://github.com/Baelfyre/amalgam-conductor
 ```
 
-> **Note:** The current development remote is still `Baelfyre/Amalgamatic-Orchestra` until the repository is officially renamed. You may need to use `https://github.com/Baelfyre/Amalgamatic-Orchestra` for the time being.
 
 You can also use the framework manually by copying the skill folders from `skills/` into your AI environment's instruction directory.
 
