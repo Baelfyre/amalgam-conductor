@@ -70,7 +70,7 @@
             "activation_level": "Specialist",
             "depends_on": "None",
             "icon_path": "assets/icons/cloak-meister.png",
-            "output_formats": ["Output"]
+            "output_formats": ["Compact", "Full"]
         },
         {
             "primary_use": "Destructive, negative, fuzz, adversarial QA, failure-mode testing",

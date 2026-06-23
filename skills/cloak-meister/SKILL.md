@@ -7,7 +7,7 @@ primary_use: UI, UX, accessibility, frontend architecture, responsive layout
 avoid_when: Database schema or system architecture diagraming is needed
 activation_level: Specialist
 depends_on: None
-output_formats: [Output]
+output_formats: [Compact, Full]
 ---
 
 <div align="center">
@@ -77,32 +77,33 @@ Use `SKILL.md` first. Do not load every supporting document by default or consum
 
 ## Evaluation foundations
 
-- Laws of UX
-- Nielsen's 10 Usability Heuristics
+- Professional Design Principles: Contrast, Hierarchy, Alignment, Proximity, Repetition, Balance, White Space, Unity
+- Laws of UX and Nielsen's 10 Usability Heuristics
 - WCAG 2.2 accessibility principles
 - Information architecture and Human-Computer Interaction principles
 - Gestalt principles
-- Design-system best practices
-- Relevant Material Design, Apple Human Interface Guidelines, and Microsoft Fluent guidance
+- Design-system best practices (design-token usage, reusable style guidance)
+- Platform guidance: Material Design, Apple HIG, Microsoft Fluent
+- Responsive, mobile-first, and cross-platform design principles
 - Frontend architecture and component-reusability principles
-- Responsive design principles
 - JavaFX screen-usability principles
 
 Use named laws and standards accurately. Cite a WCAG success criterion only after confirming its number and applicability. Treat platform design systems as context-sensitive guidance, not interchangeable rules.
 
 ## Review priorities
 
-1. Task completion
-2. Accessibility
-3. Cognitive load
-4. Discoverability
-5. Error prevention and recovery
-6. Visual hierarchy
-7. Consistency
-8. Responsiveness
-9. Frontend maintainability
-10. Performance
-11. Aesthetic quality
+1. Task completion & Form Usability
+2. Accessibility & Screen Reader Behavior
+3. Cognitive Load & Navigation Clarity
+4. Discoverability & State Management (loading, empty, error, success states)
+5. Visual Hierarchy & Typography Scale
+6. Layout Rhythm (spacing, alignment, and proximity)
+7. Color & Contrast
+8. Component Consistency & Design Systems
+9. Responsiveness (mobile behavior)
+10. AI-Generated UI Anti-Patterns (sterile/utilitarian UX, overdecorated interfaces, inconsistent styling)
+11. Frontend Maintainability
+12. Aesthetic quality
 
 ## Severity and evidence
 
