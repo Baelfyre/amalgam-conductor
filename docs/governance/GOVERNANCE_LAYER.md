@@ -68,7 +68,37 @@ The Steward and The Governor do not apply absolute or pre-assumed governance rul
 The governance layer operates contextually. Authorities do not pre-assume jurisdiction, legal obligations, business goals, or requirements. They must review *only* against what is stated or discoverable in the project context.
 
 ### Context-Missing Behavior
-If the project context profile is incomplete, unclear, or entirely missing, the Steward and Governor must not guess or make assumptions. Instead, they must return `REVISION_REQUIRED` to request the necessary clarity.
+If the project context profile is incomplete, unclear, or entirely missing, the Steward and Governor must not guess or make assumptions. 
+- In **Audit**, **Release**, or high-risk **Implementation** modes, they must return `REVISION_REQUIRED` to request the necessary clarity.
+- In **Ideation** or **Prototype** mode, they return `ADVISORY_ONLY` or `NOT_APPLICABLE` to allow exploration to proceed without blocking.
+
+## Freedom-First Development
+
+Amalgam Conductor prioritizes freedom-first, need-based development. The ecosystem ensures that ideation, brainstorming, prototyping, and concept exploration are not restricted by early governance requirements. Governance checks activate only when a task moves into implementation, when files or architecture change, or when risk triggers are explicitly hit.
+
+## Need-To-Only Governance
+
+The Governor and The Steward operate on a need-to-only basis. They must not interrupt early-stage planning, rough drafting, or prompt refinement. Full formal checks are reserved for high-impact phases (like Release or Audit), while lightweight, non-blocking pathways are used for low-risk work.
+
+## Operating Modes
+
+To support this freedom-first model, the ecosystem defines 5 operating modes:
+
+1. **Ideation Mode**
+   - **Purpose**: Brainstorming, comparing options, rough planning, concept development, prompt refinement.
+   - **Governance**: Unblocked. Project context is not required. Governance returns `ADVISORY_ONLY` or `NOT_APPLICABLE` and must not block the user.
+2. **Prototype Mode**
+   - **Purpose**: Local-only experiments, throwaway proofs-of-concept.
+   - **Governance**: Dynamic and lightweight. Full context is not required unless the task handles user data, security-sensitive code, or third-party assets.
+3. **Implementation Mode**
+   - **Purpose**: Modifying source code, database structures, documentation, or architecture.
+   - **Governance**: Flexible. Uses fast path by default. Requires minimum context only. Escalate to expanded review only if risk triggers (user data, licensing, security) appear.
+4. **Audit Mode**
+   - **Purpose**: Explicit requests for compliance audits, risk reviews, or structural assessments.
+   - **Governance**: Context-heavy. Requires full Basis of Review context.
+5. **Release Mode**
+   - **Purpose**: Deploying to production, public releases, client delivery, or open-source distribution.
+   - **Governance**: Strictest path. Fully enforces compliance, license compatibility, and privacy validation.
 
 ## Usage Pattern
 
@@ -142,6 +172,7 @@ All governance reviews use the same decision values:
 | Decision | Meaning |
 |---|---|
 | `APPROVED` | Proceed to next stage |
+| `ADVISORY_ONLY` | Advice given, exploration unblocked |
 | `REVISION_REQUIRED` | Address findings before proceeding |
 | `BLOCKED` | Cannot proceed until resolved |
 | `NOT_APPLICABLE` | No review needed for this request |
@@ -153,7 +184,7 @@ The Governor adds `human_review_required` for uncertain legal, regulatory, priva
 ```
 REVIEWER: [the-steward | the-governor]
 PROJECT_CONTEXT: [project type] | [risk level]
-DECISION: [APPROVED | REVISION_REQUIRED | BLOCKED | NOT_APPLICABLE]
+DECISION: [APPROVED | ADVISORY_ONLY | REVISION_REQUIRED | BLOCKED | NOT_APPLICABLE]
 REASON: [one-line assessment]
 RISKS: [identified risks or "none"]
 REQUIRED_ACTIONS: [actions needed or "none"]

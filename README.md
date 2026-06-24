@@ -26,13 +26,13 @@
 
 ## Core Concept
 
-Amalgam Conductor uses a governance-first workflow, but the governance layer does not assume what rules apply to every project. Before review, The Steward and The Governor identify the project context, declared objectives, release target, data use, dependencies, documentation requirements, and known constraints. The Steward then checks alignment against the project’s stated goals, scope, requirements, acceptance criteria, and SDLC needs. The Governor checks only the applicable legal-risk, privacy, IP, licensing, security, and compliance areas based on the supplied project context. If the scope is unclear, governance returns REVISION_REQUIRED instead of assuming.
+Amalgam Conductor uses freedom-first, need-based governance. Users can ideate freely. Governance review is invoked when the task requires alignment review, implementation readiness, audit, risk review, or release validation. The governance layer does not assume what rules apply to every project. Before review, The Steward and The Governor establish the Governance Basis of Review based on the active operating mode and supplied context. If the scope is unclear and review is required, governance returns `REVISION_REQUIRED` instead of assuming.
 
 ## Usage Pattern
 
 ### 1. Start with a project context
 
-The governance layer does not assume what rules apply. Users should provide enough context for The Steward and The Governor to know what they are reviewing.
+The governance layer does not assume what rules apply. Users should provide enough context for The Steward and The Governor to know what they are reviewing, scaled to the mode of operation.
 
 Minimum context:
 
@@ -77,13 +77,33 @@ Remaining Risks:
 Next Recommended Step:
 ```
 
-### 3. Let governance classify the request
+### 3. Operating Modes
 
-The Steward and The Governor first establish the Governance Basis of Review. They use the supplied context to decide whether the request is LOW, MEDIUM, or HIGH risk.
+Amalgam Conductor uses 5 distinct operating modes to scale governance dynamically, ensuring that ideation and dynamic prototyping are not restricted:
+
+1. **Ideation Mode**
+   - **Purpose**: Brainstorming, exploration, planning, concept development, prompt refinement.
+   - **Governance**: Unblocked. No project context required. Returns `ADVISORY_ONLY` or `NOT_APPLICABLE` with optional light guidance.
+2. **Prototype Mode**
+   - **Purpose**: Local experiments, throwaway proofs-of-concept.
+   - **Governance**: Lightweight checks only if obvious risks exist. Full context not required unless handling user data, third-party assets, or security-sensitive code.
+3. **Implementation Mode**
+   - **Purpose**: Making file, code, documentation, or architecture changes.
+   - **Governance**: Uses fast path by default. Requires minimum context only. Escalate to expanded review only if risk triggers (e.g. user data, licensing, security, compliance) are met.
+4. **Audit Mode**
+   - **Purpose**: Explicit request for a review, compliance check, or risk assessment.
+   - **Governance**: Context-heavy. Establishes the Governance Basis of Review. Returns findings, risks, and required actions.
+5. **Release Mode**
+   - **Purpose**: Production deployment, public release, client delivery, or open-source distribution.
+   - **Governance**: Strictest path. Requires full project context, dependencies, data use, licensing, and constraints. Escalate uncertain legal or compliance issues for human review.
+
+### 4. Let governance classify the request
+
+The Steward and The Governor first establish the Governance Basis of Review. They use the active Operating Mode and supplied context to classify the request and decide whether a check is required.
 
 They do not apply every governance rule to every task.
 
-- If context is missing, they return:
+- If context is missing in Audit, Release, or high-risk Implementation mode, they return:
   `Decision: REVISION_REQUIRED`
 - If a risk area does not apply, they return:
   `Decision: NOT_APPLICABLE`
@@ -91,15 +111,18 @@ They do not apply every governance rule to every task.
   `Decision: APPROVED`
 - If work should not proceed, they return:
   `Decision: BLOCKED`
+- If the task is in Ideation or Prototype mode, they return:
+  `Decision: ADVISORY_ONLY`
 
-### 4. Interpret the decision
+### 5. Interpret the decision
 
 | Decision | Meaning | User Action |
 |---|---|---|
 | **APPROVED** | Work can proceed | Let the conductor route the task |
+| **ADVISORY_ONLY** | Advice given, exploration unblocked | Continue brainstorming or prototyping freely |
 | **REVISION_REQUIRED** | More context or correction is needed | Add missing details and resubmit |
 | **BLOCKED** | Work should not proceed as requested | Resolve the blocking issue first |
-| **NOT_APPLICABLE** | Governance check is not needed for this task | Continue with the fast path |
+| **NOT_APPLICABLE** | Governance check is not needed | Continue with the fast path |
 
 ### 5. Review the IDE output
 
@@ -234,7 +257,7 @@ flowchart LR
 
 ## Governance Layer
 
-The Governance Layer sits above the Conductor. It intercepts incoming requests, identifies the minimum project context required, and performs a risk-scaled review (LOW, MEDIUM, or HIGH) before any implementation begins. 
+The Governance Layer sits above the Conductor. Amalgam Conductor uses freedom-first, need-based governance. Users can ideate freely. Governance review is invoked when the task requires alignment review, implementation readiness, audit, risk review, or release validation.
 
 The Steward and The Governor are entirely context-driven. They do not pre-assume what rules apply to every project, nor do they apply every governance rule universally. If the project scope is unclear or missing, governance returns `REVISION_REQUIRED` instead of assuming. Conversely, if a risk area does not apply to the current context, the authority returns `NOT_APPLICABLE`.
 

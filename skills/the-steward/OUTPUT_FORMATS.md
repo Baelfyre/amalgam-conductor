@@ -5,7 +5,7 @@
 ```
 REVIEWER: the-steward
 PROJECT_CONTEXT: [project type] | [risk level]
-DECISION: [APPROVED | REVISION_REQUIRED | BLOCKED | NOT_APPLICABLE]
+DECISION: [APPROVED | ADVISORY_ONLY | REVISION_REQUIRED | BLOCKED | NOT_APPLICABLE]
 REASON: [one-line assessment]
 RISKS: [identified risks or "none"]
 REQUIRED_ACTIONS: [actions needed or "none"]
@@ -16,7 +16,7 @@ REQUIRED_ACTIONS: [actions needed or "none"]
 ```
 REVIEWER: the-steward
 PROJECT_CONTEXT: [project type] | [risk level]
-DECISION: [APPROVED | REVISION_REQUIRED | BLOCKED | NOT_APPLICABLE]
+DECISION: [APPROVED | ADVISORY_ONLY | REVISION_REQUIRED | BLOCKED | NOT_APPLICABLE]
 SUMMARY: [one-line assessment]
 ALIGNMENT: [status]
 SCOPE: [within scope | scope drift risk | out of scope]

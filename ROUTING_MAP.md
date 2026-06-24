@@ -2,16 +2,23 @@
 
 This file provides a lightweight, scanner-friendly map of common tasks to the correct specialist skill. Load this file when routing is unclear or when multi-skill coordination is required.
 
-## Governance Layer (Pre-Routing)
+## Routing Map Flow
 
-All requests pass through the Governance Layer before reaching the routing table:
+All requests pass through the following routing sequence:
 
-| Step | Authority | Review Scope |
-|---|---|---|
-| 1 | `the-steward` | Business alignment, scope, requirements, SDLC documentation |
-| 2 | `the-governor` | Legal compliance, privacy, IP, licensing, audit readiness |
+```text
+Request
+  ↓
+Intent Classification (Determine user objective)
+  ↓
+Mode Selection (Select: Ideation, Prototype, Implementation, Audit, Release)
+  ↓
+Need-Based Governance (Dynamic checks by The Steward & The Governor when applicable)
+  ↓
+Conductor or Specialist Routing (Route task to destination skill)
+```
 
-If either authority returns `BLOCKED`, the Conductor stops. If `human_review_required: true`, the Conductor pauses until human review completes.
+If either governance authority returns `BLOCKED`, the Conductor stops. If `human_review_required: true` is flagged, the Conductor pauses until human review completes. In `Ideation` or `Prototype` modes, governance returns `ADVISORY_ONLY` or `NOT_APPLICABLE` and does not block orchestration.
 
 ## Routing Rules
 

@@ -5,7 +5,7 @@
 ```
 REVIEWER: the-governor
 PROJECT_CONTEXT: [project type] | [risk level]
-DECISION: [APPROVED | REVISION_REQUIRED | BLOCKED | NOT_APPLICABLE]
+DECISION: [APPROVED | ADVISORY_ONLY | REVISION_REQUIRED | BLOCKED | NOT_APPLICABLE]
 HUMAN_REVIEW_REQUIRED: [true | false]
 REASON: [one-line assessment]
 RISKS: [identified risks or "none"]
@@ -17,7 +17,7 @@ REQUIRED_ACTIONS: [actions needed or "none"]
 ```
 REVIEWER: the-governor
 PROJECT_CONTEXT: [project type] | [risk level]
-DECISION: [APPROVED | REVISION_REQUIRED | BLOCKED | NOT_APPLICABLE]
+DECISION: [APPROVED | ADVISORY_ONLY | REVISION_REQUIRED | BLOCKED | NOT_APPLICABLE]
 HUMAN_REVIEW_REQUIRED: [true | false]
 SUMMARY: [one-line assessment]
 COMPLIANCE: [compliant | concerns found | non-compliant]

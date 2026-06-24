@@ -14,6 +14,8 @@
 | Hidden Dagger | `hidden-dagger` | Controlled resilience tester | Destructive, negative, fuzz, adversarial QA, failure-mode testing | Operating in production, lacking explicit approval, or during early dev | Gated | `amalgam-conductor` | Output |
 | Clockwork Meister | `clockwork-meister` | Engineering / Code Structure | OOP architecture, layered architecture, system design, refactoring | Modifying UI layouts, testing security boundaries, or writing documentation | Specialist | None | Compact, Full |
 
+Note: `The Steward` and `The Governor` are governance authorities that evaluate request intent, risk, alignment, and compliance. They do not implement changes or act as execution specialists.
+
 ---
 
 *Please review our [Global Disclaimer](docs/meta/DISCLAIMER.md) regarding the use of these AI-assisted tools.*

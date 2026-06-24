@@ -263,3 +263,264 @@ REQUIRED_ACTIONS: [Provide project type, release target, documentation requireme
 ```
 
 **Result**: Returned for context. No assumptions made.
+
+---
+
+## Scenario 10: Brainstorming with incomplete context
+
+**Mode**: Ideation Mode
+**Context**: Missing full project context
+
+**Steward**:
+```
+REVIEWER: the-steward
+PROJECT_CONTEXT: unknown | unknown
+DECISION: ADVISORY_ONLY
+REASON: Request is for brainstorming/exploration, no formal check required.
+RISKS: Cannot assess risk without context.
+REQUIRED_ACTIONS: none
+```
+
+**Governor**:
+```
+REVIEWER: the-governor
+PROJECT_CONTEXT: unknown | unknown
+DECISION: NOT_APPLICABLE
+REASON: Ideation request, compliance checks not applicable.
+RISKS: Cannot assess risk without context.
+REQUIRED_ACTIONS: none
+```
+
+**Result**: Allowed to proceed. No blockers.
+
+---
+
+## Scenario 11: Ideating feature ideas with no project context
+
+**Mode**: Ideation Mode
+**Context**: Brainstorming new feature concepts, no context profile supplied.
+
+**Steward**:
+```
+REVIEWER: the-steward
+PROJECT_CONTEXT: unknown | unknown
+DECISION: ADVISORY_ONLY
+REASON: Feature ideation is unblocked under freedom-first guidelines.
+RISKS: Cannot assess risk without context.
+REQUIRED_ACTIONS: none
+```
+
+**Governor**:
+```
+REVIEWER: the-governor
+PROJECT_CONTEXT: unknown | unknown
+DECISION: ADVISORY_ONLY
+REASON: Brainstorming phase, compliance review deferred.
+RISKS: Cannot assess risk without context.
+REQUIRED_ACTIONS: none
+```
+
+**Result**: ADVISORY_ONLY. Exploration is unblocked.
+
+---
+
+## Scenario 12: Local prototype with no release and no user data
+
+**Mode**: Prototype Mode
+**Context**: Local test and experiment | LOW risk | No public release | No user data
+
+**Steward**:
+```
+REVIEWER: the-steward
+PROJECT_CONTEXT: prototype | LOW
+DECISION: APPROVED
+REASON: Local experiment within scope of exploration.
+RISKS: none
+REQUIRED_ACTIONS: none
+```
+
+**Governor**:
+```
+REVIEWER: the-governor
+PROJECT_CONTEXT: prototype | LOW
+DECISION: ADVISORY_ONLY
+REASON: Local prototype with no user data collects no PII.
+RISKS: none
+REQUIRED_ACTIONS: none
+```
+
+**Result**: APPROVED or ADVISORY_ONLY. Dynamic development is allowed.
+
+---
+
+## Scenario 13: Low-risk typo or formatting change
+
+**Mode**: Implementation Mode
+**Context**: Typo fix in documentation | LOW risk
+
+**Steward**:
+```
+REVIEWER: the-steward
+PROJECT_CONTEXT: doc-edit | LOW
+DECISION: NOT_APPLICABLE
+REASON: Formatting or typo edit does not require alignment check.
+RISKS: none
+REQUIRED_ACTIONS: none
+```
+
+**Governor**:
+```
+REVIEWER: the-governor
+PROJECT_CONTEXT: doc-edit | LOW
+DECISION: NOT_APPLICABLE
+REASON: Low-risk edit does not trigger compliance reviews.
+RISKS: none
+REQUIRED_ACTIONS: none
+```
+
+**Result**: NOT_APPLICABLE or APPROVED. Continues on fast path.
+
+---
+
+## Scenario 14: Implementation with missing context and risk triggers
+
+**Mode**: Implementation Mode
+**Context**: Modifying database schemas | Risk triggers present | Missing Project Type and Data Use
+
+**Steward**:
+```
+REVIEWER: the-steward
+PROJECT_CONTEXT: unknown | unknown
+DECISION: REVISION_REQUIRED
+REASON: Database changes require minimum project type context.
+RISKS: Cannot assess risk without context.
+REQUIRED_ACTIONS: [Provide project type]
+```
+
+**Governor**:
+```
+REVIEWER: the-governor
+PROJECT_CONTEXT: unknown | unknown
+DECISION: REVISION_REQUIRED
+REASON: Schema modification requires minimum data usage context to identify PII risk.
+RISKS: Cannot assess risk without context.
+REQUIRED_ACTIONS: [Declare data use status]
+```
+
+**Result**: REVISION_REQUIRED for minimum missing context only.
+
+---
+
+## Scenario 15: Audit request with missing context
+
+**Mode**: Audit Mode
+**Context**: Formal compliance review requested | Missing context profile
+
+**Steward**:
+```
+REVIEWER: the-steward
+PROJECT_CONTEXT: unknown | unknown
+DECISION: REVISION_REQUIRED
+REASON: Formal audit requires project goals and SDLC requirements.
+RISKS: Cannot assess risk without context.
+REQUIRED_ACTIONS: [Provide project type, goals, documentation requirements]
+```
+
+**Governor**:
+```
+REVIEWER: the-governor
+PROJECT_CONTEXT: unknown | unknown
+DECISION: REVISION_REQUIRED
+REASON: Compliance audit cannot establish a Basis of Review without context.
+RISKS: Cannot assess risk without context.
+REQUIRED_ACTIONS: [Declare release target, data use, dependencies]
+```
+
+**Result**: REVISION_REQUIRED.
+
+---
+
+## Scenario 16: Release review with missing context
+
+**Mode**: Release Mode
+**Context**: Request for production deployment review | Missing context profile
+
+**Steward**:
+```
+REVIEWER: the-steward
+PROJECT_CONTEXT: unknown | unknown
+DECISION: REVISION_REQUIRED
+REASON: Release review requires verification against project goals and scope.
+RISKS: Cannot assess risk without context.
+REQUIRED_ACTIONS: [Provide project type, goals, scope, and acceptance criteria]
+```
+
+**Governor**:
+```
+REVIEWER: the-governor
+PROJECT_CONTEXT: unknown | unknown
+DECISION: REVISION_REQUIRED
+REASON: Release gate cannot verify legal, privacy, or licensing compliance without context.
+RISKS: Cannot assess risk without context.
+REQUIRED_ACTIONS: [Declare release target, data use, dependencies, licensing, constraints]
+```
+
+**Result**: REVISION_REQUIRED.
+
+---
+
+## Scenario 17: User asks to skip governance during ideation
+
+**Mode**: Ideation Mode
+**Context**: User requests brainstorming ideas and explicitly asks to skip governance.
+
+**Steward**:
+```
+REVIEWER: the-steward
+PROJECT_CONTEXT: ideation | LOW
+DECISION: NOT_APPLICABLE
+REASON: Governance checks are bypassed during ideation.
+RISKS: none
+REQUIRED_ACTIONS: none
+```
+
+**Governor**:
+```
+REVIEWER: the-governor
+PROJECT_CONTEXT: ideation | LOW
+DECISION: ADVISORY_ONLY
+REASON: Exploration is unblocked. Reminder: formal review is needed before implementation or release.
+RISKS: none
+REQUIRED_ACTIONS: none
+```
+
+**Result**: Allowed with advisory reminder.
+
+---
+
+## Scenario 18: User asks to skip governance during release review
+
+**Mode**: Release Mode
+**Context**: User requests release review and asks to bypass governance gates.
+
+**Steward**:
+```
+REVIEWER: the-steward
+PROJECT_CONTEXT: release | unknown
+DECISION: REVISION_REQUIRED
+REASON: Governance gates cannot be bypassed during release.
+RISKS: Cannot assess risk without context.
+REQUIRED_ACTIONS: [Provide full project context profile]
+```
+
+**Governor**:
+```
+REVIEWER: the-governor
+PROJECT_CONTEXT: release | unknown
+DECISION: BLOCKED
+REASON: Attempting to bypass mandatory release gate compliance.
+RISKS: High compliance and legal exposure.
+REQUIRED_ACTIONS: [Complete release gate checks, no bypass allowed]
+```
+
+**Result**: REVISION_REQUIRED or BLOCKED. Bypassing release gates is strictly prohibited.

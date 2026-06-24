@@ -1,25 +1,21 @@
 # Governance Review Flow
 
-Every request passes through this flow before execution begins. Review depth scales to project risk.
+Every request passes through this flow before execution begins. Review depth scales to project risk and the active operating mode.
 
 ## Standard User Flow
 
 ```
 Request
 ↓
-Project Context
+Intent Classification
 ↓
-Governance Basis of Review
+Mode Selection (Ideation, Prototype, Implementation, Audit, Release)
 ↓
-Steward Review
+Need-Based Governance Review (if applicable)
 ↓
-Governor Review
+Conductor Routing or Advisory Response
 ↓
-Conductor Routing
-↓
-Specialist Execution
-↓
-Validation
+Validation when files change
 ↓
 User Review
 ```
@@ -30,66 +26,51 @@ User Review
 Request
   │
   ▼
-┌───────────────────┐
-│  Project Context  │  Identify or request context profile
-│    Discovery      │
-└────────┬──────────┘
-         │
-         ▼
-┌───────────────────┐
-│ Governance Basis  │  Establish review dimensions & constraints
-│    of Review      │
-└────────┬──────────┘
-         │
-         ▼
-┌───────────────────┐
-│ Risk              │  LOW → lightweight review
-│ Classification    │  MEDIUM → standard review
-│                   │  HIGH → expanded review
-└────────┬──────────┘
-         │
-         ▼
-┌───────────────────┐
-│   The Steward     │  Business alignment, scope, requirements
-│     Review        │  (depth scaled to risk level)
-└────────┬──────────┘
-         │
-  BLOCKED ──► STOP
-  REVISION_REQUIRED ──► RETURN for revision
-  NOT_APPLICABLE ──► SKIP to Governor
-  APPROVED ──► Continue
-         │
-         ▼
-┌───────────────────┐
-│   The Governor    │  Legal, compliance, privacy, IP, licensing
-│     Review        │  (depth scaled to risk level)
-└────────┬──────────┘
-         │
-  BLOCKED ──► STOP
-  REVISION_REQUIRED ──► RETURN for remediation
-  human_review_required ──► PAUSE for human review
-  NOT_APPLICABLE ──► SKIP to Conductor
-  APPROVED ──► Continue
-         │
-         ▼
-┌───────────────────┐
-│ Amalgam Conductor │  Route to execution skills
-└────────┬──────────┘
-         │
-         ▼
-┌───────────────────┐
-│ Execution         │  Skills perform work
-└────────┬──────────┘
-         │
-         ▼
-┌───────────────────┐
-│ Validation        │  QA, testing, review
-└────────┬──────────┘
-         │
-         ▼
-┌───────────────────┐
-│ Release Gate      │  Final compliance check
-└───────────────────┘
+┌───────────────────────┐
+│ Intent Classification │  Determine user objective
+└──────────┬────────────┘
+           │
+           ▼
+┌───────────────────────┐
+│    Mode Selection     │  Select: Ideation, Prototype, Implementation,
+└──────────┬────────────┘          Audit, or Release mode
+           │
+           ▼
+┌───────────────────────┐
+│ Governance Basis check│  Establish review dimensions if required
+└──────────┬────────────┘
+           │
+           ▼
+┌───────────────────────┐
+│      Need-Based       │  Ideation/Prototype → ADVISORY_ONLY / NOT_APPLICABLE
+│   Governance Review   │  Audit/Release → strict validation
+└──────────┬────────────┘  Low-risk → Fast path (NOT_APPLICABLE)
+           │
+     BLOCKED ──► STOP
+     REVISION_REQUIRED ──► RETURN for revision
+     ADVISORY_ONLY ──► Conductor Routing / Advisory Response
+     NOT_APPLICABLE ──► Conductor Routing
+     APPROVED ──► Conductor Routing
+           │
+           ▼
+┌───────────────────────┐
+│   Amalgam Conductor   │  Route request (if approved/applicable)
+└──────────┬────────────┘
+           │
+           ▼
+┌───────────────────────┐
+│       Execution       │  Specialists perform work
+└──────────┬────────────┘
+           │
+           ▼
+┌───────────────────────┐
+│      Validation       │  QA check if files changed
+└──────────┬────────────┘
+           │
+           ▼
+┌───────────────────────┐
+│     Release Gate      │  Final compliance check before release
+└───────────────────────┘
 ```
 
 ## Fast Path (LOW Risk)

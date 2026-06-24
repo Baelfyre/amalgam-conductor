@@ -1,6 +1,6 @@
 # Release Gates
 
-Release gates enforce governance compliance before any release.
+Release gates enforce governance compliance before any release. **Release Mode** is the strictest governance path in the ecosystem. Formal, comprehensive governance review is mandatory before any release, client delivery, open-source distribution, production deployment, or external publication.
 
 ## Pre-Release Checklist
 
@@ -25,8 +25,9 @@ Release gates enforce governance compliance before any release.
 
 ## Gate Enforcement
 
+- **Release Mode Enforcement**: The Conductor and Governance authorities (The Steward and The Governor) enforce complete Basis of Review context checking for all release activities. Bypassing compliance or scope checks is prohibited.
 - The Conductor must check for unresolved governance findings before routing release work.
-- Release-related requests (publish, deploy, tag, distribute) require explicit governance clearance.
+- Release-related requests (publish, deploy, tag, distribute, client delivery, or public distribution) require explicit governance clearance.
 - High-impact releases require both Steward and Governor `APPROVED` decisions.
 
 ## Evidence
