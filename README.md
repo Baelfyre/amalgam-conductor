@@ -48,6 +48,8 @@ Minimum context:
 
 ### 2. Use the standard prompt pattern
 
+Add this template to the top of your request:
+
 ```text
 [@ponytail] use amalgam-conductor for this task
 
@@ -66,6 +68,124 @@ Requirements:
 - List what must be changed.
 - List what must be preserved.
 - List any rules the implementation must follow.
+
+Expected Output:
+Changed Files:
+Summary:
+Validation Results:
+Remaining Risks:
+Next Recommended Step:
+```
+
+### 3. Let governance classify the request
+
+The Steward and The Governor first establish the Governance Basis of Review. They use the supplied context to decide whether the request is LOW, MEDIUM, or HIGH risk.
+
+They do not apply every governance rule to every task.
+
+- If context is missing, they return:
+  `Decision: REVISION_REQUIRED`
+- If a risk area does not apply, they return:
+  `Decision: NOT_APPLICABLE`
+- If work can proceed, they return:
+  `Decision: APPROVED`
+- If work should not proceed, they return:
+  `Decision: BLOCKED`
+
+### 4. Interpret the decision
+
+| Decision | Meaning | User Action |
+|---|---|---|
+| **APPROVED** | Work can proceed | Let the conductor route the task |
+| **REVISION_REQUIRED** | More context or correction is needed | Add missing details and resubmit |
+| **BLOCKED** | Work should not proceed as requested | Resolve the blocking issue first |
+| **NOT_APPLICABLE** | Governance check is not needed for this task | Continue with the fast path |
+
+### 5. Review the IDE output
+
+The AI will output your changes using this expected format:
+
+```text
+Changed Files:
+Summary:
+Validation Results:
+Remaining Risks:
+Next Recommended Step:
+```
+
+### 6. Iterate
+
+Follow this feedback loop:
+1. Draft or refine the prompt in chat.
+2. Send the refined prompt to the IDE.
+3. Let the IDE inspect files and propose changes.
+4. Review changed files and validation results.
+5. Approve, revise, or ask for another iteration.
+6. Commit only after validation passes.
+
+### 7. When to use Amalgam Conductor
+
+Use Amalgam Conductor for:
+- Multi-file changes.
+- Architecture changes.
+- Governance-sensitive work.
+- Documentation and implementation updates.
+- Public release preparation.
+- Tasks involving user data, licensing, privacy, security, or compliance.
+- Cross-domain tasks.
+
+### 8. When to use a specialist directly
+
+Use a specialist directly when the task is narrow and obvious:
+- UI only.
+- Documentation only.
+- SQL only.
+- QA only.
+- Security evidence only.
+- Diagram only.
+
+> [!NOTE]
+> When unsure, start with Amalgam Conductor. It can route the task to the correct specialist.
+
+### 9. Token-efficient usage
+
+> [!TIP]
+> For best token efficiency:
+> - Provide only relevant project context.
+> - Use the standard prompt pattern.
+> - Ask for changed files, summary, validation, risks, and next step.
+> - Do not request expanded governance analysis unless the task is MEDIUM or HIGH risk.
+> - Use fast path for typo fixes, formatting edits, and local documentation cleanup.
+
+### 10. Add one complete example
+
+Here is a complete, real-world prompt showing this pattern in action:
+
+```text
+[@ponytail] use amalgam-conductor for this task
+
+Project Context:
+Project Type: Open-source plugin repository.
+Goal: Improve README usage instructions.
+Release Target: Public GitHub repository.
+Data Use: No user data.
+Dependencies or Third-Party Assets: Existing local SVG banner and Markdown files only.
+Constraints:
+- Keep plugin runtime folders unchanged.
+- Do not add JavaScript or Python.
+- Keep README concise and easy to scan.
+- Preserve validation instructions.
+
+Task:
+Update README.md so users understand exactly how to use the plugin.
+
+Requirements:
+- Add a Usage Pattern section.
+- Explain the required project context.
+- Add the standard prompt template.
+- Explain APPROVED, REVISION_REQUIRED, BLOCKED, and NOT_APPLICABLE.
+- Explain when to use Amalgam Conductor and when to use specialists directly.
+- Keep token-efficiency guidance short.
 
 Expected Output:
 Changed Files:

@@ -2,15 +2,26 @@
 
 Every request passes through this flow before execution begins. Review depth scales to project risk.
 
-## Adaptive Review Path
+## Standard User Flow
 
 ```
-Step 1: Project Context Discovery
-Step 2: Establish Governance Basis of Review
-Step 3: Classify risk → LOW | MEDIUM | HIGH
-Step 4: Apply only relevant governance checks
-Step 5: Return shortest sufficient decision
-Step 6: Escalate only when risk, missing docs, or uncertainty requires it
+Request
+↓
+Project Context
+↓
+Governance Basis of Review
+↓
+Steward Review
+↓
+Governor Review
+↓
+Conductor Routing
+↓
+Specialist Execution
+↓
+Validation
+↓
+User Review
 ```
 
 ## Flow Diagram
