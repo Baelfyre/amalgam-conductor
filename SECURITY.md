@@ -10,7 +10,7 @@ If you discover a security vulnerability, please do not create a public issue. I
 2. If private vulnerability reporting is not available, contact the maintainer directly at:
 
 ```text
-[INSERT SECURITY CONTACT EMAIL OR PRIVATE REPORTING METHOD]
+Reach out to the maintainers privately via the project's Community Discussions.
 ```
 
 Please include the following information when reporting a vulnerability:
