@@ -113,8 +113,11 @@ Conductor uses 5 distinct operating modes to scale governance dynamically, ensur
 | **Clockwork** | Architecture, OOP, refactoring |
 | **Cloak** | UI, UX, layout, accessibility |
 | **Scribe** | Documentation and technical writing |
+| **Weaver** | Visual modeling and diagram specialist |
+| **Chronicler** | Database architect and schema auditor |
 | **Overseer** | QA, testing, release readiness |
 | **Cipher** | Security and privacy evidence |
+| **Dagger** | Controlled resilience tester |
 
 For details on all execution skills, routing logic, and behavioral constraints, see the [Specialist Skill Index](SKILL_INDEX.md).
 
@@ -122,17 +125,17 @@ For details on all execution skills, routing logic, and behavioral constraints, 
 
 ## Installation
 
-To set up Conductor as an installable AI workflow plugin:
+To set up Orchestra as an installable AI workflow plugin:
 
 ### Antigravity Setup
 ```sh
-agy plugin install https://github.com/Baelfyre/amalgam-conductor
+agy plugin install https://github.com/Baelfyre/Orchestra
 ```
 
 ### Codex Setup
 Clone this repository directly into your Codex plugins directory:
 ```sh
-git clone https://github.com/Baelfyre/amalgam-conductor.git
+git clone https://github.com/Baelfyre/Orchestra.git
 ```
 
 For manual configurations or environment setup details, see the [Installation Guide](docs/setup/INSTALLATION.md).
@@ -260,7 +263,15 @@ GitHub displays repository files above the README by default. This README keeps 
 
 ```
 skills/
+├── acme-overseer/
 ├── amalgam-conductor/
+├── cipher-meister/
+├── cloak-meister/
+├── clockwork-meister/
+├── hidden-dagger/
+├── meister-chronicler/
+├── meister-weaver/
+├── scribe-meister/
 ├── the-governor/
 └── the-steward/
 
