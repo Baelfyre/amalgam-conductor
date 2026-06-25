@@ -1,6 +1,6 @@
 # Plugin Readiness
 
-This document tracks the readiness of the Amalgamatic Orchestra framework for its release as the **Amalgam Conductor** installable plugin.
+This document tracks the readiness of the Orchestra framework for its release as the **Conductor** installable plugin.
 
 ## Status
 
@@ -19,14 +19,14 @@ This document tracks the readiness of the Amalgamatic Orchestra framework for it
 - **Plugin install validation status:** Completed
   - `agy plugin install https://github.com/Baelfyre/amalgam-conductor` successfully processed 9 skills and 9 commands.
 - **Plugin icon status:** Completed
-  - The existing Amalgam Conductor icon is used as the plugin icon: `assets/icons/amalgam-conductor.ico`.
+  - The existing Conductor icon is used as the plugin icon: `assets/icons/amalgam-conductor.ico`.
   - The broader framework logo remains available at `assets/logo/orchestra-of-amalgamation.png`.
 - **Remaining step:** Pending
   - Validate whether the target plugin loader displays the manifest-level icon path.
 
 ---
 
-Amalgamatic Orchestra is intentionally designed as a **Markdown-first** framework. By keeping skill instructions, progressive disclosure rules, and routing metadata in standard markdown format, the framework remains universally readable by any AI assistant capable of file reading (e.g., Claude Code, Cursor, Antigravity) without requiring a proprietary runtime plugin.
+Orchestra is intentionally designed as a **Markdown-first** framework. By keeping skill instructions, progressive disclosure rules, and routing metadata in standard markdown format, the framework remains universally readable by any AI assistant capable of file reading (e.g., Claude Code, Cursor, Antigravity) without requiring a proprietary runtime plugin.
 
 However, as agentic platforms evolve, automated skill discovery and deterministic loading become valuable. This document outlines how future plugin loaders should interact with the Orchestra without breaking its fundamental architecture.
 

@@ -10,7 +10,7 @@
 
 ## v0.8.0 - Phase 7: Final release hardening (2026-06-20)
 
-- Replaced all legacy references to "Orchestra of Amalgamation" with the correct "Amalgamatic Orchestra" title.
+- Replaced all legacy references to "Orchestra of Amalgamation" with the correct "Orchestra" title.
 - Replaced the vague "high-signal" term with "relevant" in the Conductor skill.
 - Added `V1_READINESS_CHECKLIST.md` to formally verify all critical repository requirements before v1.0.0 tagging.
 - Hardened validation scripts and documentation to guarantee zero-drift and Markdown-first architecture.
@@ -42,7 +42,7 @@
 - Added lightweight structured metadata (e.g. `slug`, `role`, `primary_use`, `avoid_when`) to the frontmatter of all core `SKILL.md` files to prevent drift and lay groundwork for automated plugin loading.
 - Created a root-level `ROUTING_MAP.md` that maps common tasks to the correct specialist skill in a concise, scanner-friendly format.
 - Merged the Conductor's legacy conflict resolution logic into `ROUTING_MAP.md` and removed the stale `ROUTING_MATRIX.md` file.
-- Updated Amalgam Conductor to lazily load the routing map only when workflow coordination is unclear.
+- Updated Conductor to lazily load the routing map only when workflow coordination is unclear.
 - Standardized `SKILL_INDEX.md` to precisely reflect the new structured metadata fields.
 
 
@@ -62,6 +62,6 @@
 ## v0.1.0 - Initial packaging (2026-06-20)
 
 - Created the clean repository package.
-- Added the eight-skill Amalgamatic Orchestra structure.
+- Added the eight-skill Orchestra structure.
 - Added IDE adapter guides and templates.
 - Added validation and local-only guidance.
