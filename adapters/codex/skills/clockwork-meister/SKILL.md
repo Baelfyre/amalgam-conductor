@@ -1,8 +1,6 @@
----
-name: clockwork-meister
-
-description: The Clockwork guards the moving framework of the codebase: OOP discipline, architecture layering, service/repository boundaries, dependency flow, transaction safety, and structural refactor integrity.
-
+﻿---
+name: clockwork-meister
+description: The Clockwork guards the moving framework of the codebase: OOP discipline, architecture layering, service/repository boundaries, dependency flow, transaction safety, and structural refactor integrity.
 ---
 # The Clockwork
 
@@ -23,7 +21,7 @@ Guard and enforce the following architecture boundaries:
 - **Dependency Direction**: Dependencies must point inward toward the Domain. Infrastructure and UI must depend on Domain, never the reverse.
 - **OOP Responsibility Separation**: Objects should have high cohesion and low coupling.
 - **SOLID Alignment**: Enforce Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion where practical.
-- **Service/Repository/Controller Separation**:
+- **Service/Repository/Controller Separation**: 
   - Controllers/UI: Render views or handle HTTP. No DB queries. No hidden business rules.
   - Services: Own workflows. Coordinate domains and repositories.
   - Domains: Own business rules. Pure logic. No UI or DB coupling.
