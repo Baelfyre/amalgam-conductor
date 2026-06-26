@@ -130,20 +130,227 @@ For details on all execution skills, routing logic, and behavioral constraints, 
 
 ---
 
-## Installation
+## Installation by AI Host or IDE
 
-To set up Orchestra as an installable AI workflow plugin:
+Orchestra can be used across different AI-assisted development environments, but each host loads skills differently. The installation method depends on the AI host you are using.
+
+### Installation Summary
+
+| Host / IDE                |                     Installation Scope | How Orchestra Loads                                                   | Recommended Setup                                   |
+| ------------------------- | -------------------------------------: | --------------------------------------------------------------------- | --------------------------------------------------- |
+| Antigravity / `agy`       |                                 Global | Installed as an Antigravity plugin                                    | Use `agy plugin install` once                       |
+| Codex                     |                       Per project repo | Reads `.agents/skills` inside the target repo                         | Install only into repos where Codex needs Orchestra |
+| VS Code                   | Per extension or per repo instructions | Depends on the AI extension, such as Copilot or Continue              | Use instruction files, not full skill folders       |
+| IntelliJ / JetBrains IDEs | Per plugin or per project instructions | Depends on JetBrains AI Assistant, Copilot, Junie, or similar plugins | Use instruction files or project docs               |
+| Other AI coding tools     |                          Tool-specific | Usually reads repo instructions, rules, or prompt files               | Adapt Orchestra as project instructions             |
+
+---
 
 ### Antigravity Setup
-```sh
+
+Antigravity uses `agy` plugins. This is the cleanest setup because the plugin is installed globally and can be used across Antigravity workspaces.
+
+```powershell
 agy plugin install https://github.com/Baelfyre/Orchestra
 ```
 
-### Codex Setup
-Clone this repository directly into your Codex plugins directory:
-```sh
-git clone https://github.com/Baelfyre/Orchestra.git
+Verify installation:
+
+```powershell
+agy plugin list
 ```
+
+Expected result should include:
+
+```text
+conductor
+```
+
+Use Orchestra in Antigravity with:
+
+```text
+/ponytail /conductor
+```
+
+Notes:
+
+* Antigravity does not require `.agents/skills` inside each project repo.
+* Removing local Codex folders from a project does not affect Antigravity.
+* This is the recommended setup for users who want one global Orchestra installation.
+
+---
+
+### Codex Setup
+
+Codex uses a repo-local skill model. Orchestra skills must be installed into the project repo where Codex will run.
+
+The target layout is:
+
+```text
+<ProjectRepo>/.agents/skills/
+```
+
+Example:
+
+```text
+C:\YourProject\.agents\skills\conductor
+C:\YourProject\.agents\skills\scribe
+C:\YourProject\.agents\skills\clockwork
+```
+
+Install Orchestra Codex skills into a target project repo:
+
+```powershell
+cd C:\conductor
+
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\refresh-installed-integrations.ps1 -Target Codex -CodexRepoPath "C:\path\to\your\project" -Force
+```
+
+Important:
+
+* Codex installation is per project repo.
+* Only install Codex skills into repos where you actively want Codex to use Orchestra.
+* Do not install Codex skills into every repo by default.
+* If `.agents/` is only for local Codex use, do not commit it.
+
+For local-only Codex installs, add this to the target repo local Git exclude file:
+
+```text
+.git/info/exclude
+```
+
+Recommended local-only entries:
+
+```gitignore
+.agents/
+.amalgam/
+```
+
+This keeps the files available locally without adding them to the shared repository.
+
+Use `.gitignore` only if the whole project intentionally wants to share those AI configuration files with all contributors.
+
+---
+
+### VS Code Setup
+
+VS Code does not use `agy` plugins and does not automatically load Orchestra skill folders unless an extension specifically supports them.
+
+Most VS Code AI workflows are extension-driven, such as:
+
+* GitHub Copilot
+* Continue
+* Cody
+* CodeGPT
+* other local or cloud AI extensions
+
+Recommended setup:
+
+* Do not copy the full Orchestra skill folders into every VS Code project.
+* Use a lightweight instruction file if the AI extension supports it.
+* Keep project-specific AI guidance small, clear, and intentional.
+
+For GitHub Copilot, a common project instruction file is:
+
+```text
+.github/copilot-instructions.md
+```
+
+Suggested content:
+
+```markdown
+# Copilot Instructions
+
+Use Orchestra-style workflow guidance.
+
+Default routing pattern:
+`/ponytail /conductor`
+
+Prioritize:
+- Small, targeted changes.
+- SOLID and OOP compliance where applicable.
+- No broad rewrites unless requested.
+- Preserve existing architecture unless the task explicitly asks to refactor.
+- Run available validation before finalizing.
+- Return changed files, summary, validation results, risks, and next step.
+```
+
+Commit this file only if the repository should permanently share these AI instructions.
+
+---
+
+### IntelliJ / JetBrains IDE Setup
+
+IntelliJ and other JetBrains IDEs do not use `agy` plugins. AI behavior depends on the installed plugin, such as:
+
+* JetBrains AI Assistant
+* GitHub Copilot for JetBrains
+* Junie
+* other third-party AI coding plugins
+
+Recommended setup:
+
+* Do not add `.agents/skills` unless the AI tool specifically requires it.
+* Use IDE chat instructions, project documentation, or a small AI workflow guide.
+* If the guidance should be shared with contributors, document it in the repo.
+* If it is only for local use, keep it outside Git tracking.
+
+Optional shared project file:
+
+```text
+docs/AI_WORKFLOW.md
+```
+
+Suggested instruction pattern:
+
+```text
+Use Orchestra-style workflow guidance.
+Default to /ponytail /conductor for multi-step tasks.
+Prefer small, reviewable changes.
+Preserve existing project structure.
+Validate before summarizing.
+Report changed files, validation results, remaining risks, and next recommended step.
+```
+
+---
+
+### Local-Only vs Shared AI Configuration
+
+Use this rule of thumb:
+
+| Scenario                         | Recommended Location              |                     Commit It? |
+| -------------------------------- | --------------------------------- | -----------------------------: |
+| Antigravity global plugin        | `agy plugin install`              |        No project files needed |
+| Codex local-only testing         | `.agents/skills`                  |                             No |
+| Codex shared team workflow       | `.agents/skills`                  |       Yes, only if intentional |
+| Copilot project instructions     | `.github/copilot-instructions.md` | Yes, if useful to contributors |
+| Personal IDE prompt notes        | Outside repo or local notes       |                             No |
+| General project AI workflow docs | `docs/AI_WORKFLOW.md`             | Yes, if useful to contributors |
+
+---
+
+### Recommended Default Setup
+
+For most users:
+
+```text
+Antigravity:
+Install globally with agy.
+
+Codex:
+Install per repo only when needed.
+
+VS Code:
+Use extension-specific instruction files.
+
+IntelliJ:
+Use plugin-specific instructions or project docs.
+
+Other IDEs:
+Check whether the AI host supports repo instructions, skill folders, or plugins.
+```
+
+Do not assume all IDEs use the same plugin model. Antigravity uses a global plugin model, Codex uses repo-local skills, and most traditional IDEs use extension-specific instructions.
 
 For manual configurations or environment setup details, see the [Installation Guide](docs/setup/INSTALLATION.md).
 
@@ -237,7 +444,7 @@ Output from Conductor and its specialists automatically adapts to your intent:
 |---|---|---|
 | Governance | [Governance Layer](docs/governance/GOVERNANCE_LAYER.md) | Understand The Steward, The Governor, risk scaling, and release gates |
 | Skills | [Skill Index](SKILL_INDEX.md) | Review available specialists and routing behavior |
-| Installation | [Installation Guide](docs/setup/INSTALLATION.md) | Set up the plugin in Antigravity or Codex |
+| Installation | [Installation Guide](docs/setup/INSTALLATION.md) | Set up the plugin in Antigravity, Codex, VS Code, or JetBrains IDEs |
 | Validation | [Validation Guide](docs/setup/VALIDATION.md) | Run structure and manifest checks |
 | Contributing | [Contributing Guide](docs/CONTRIBUTING.md) | Guidelines for contributing and safety policies |
 | Disclaimer | [Disclaimer](docs/meta/DISCLAIMER.md) | Understand legal and operational limitations |
@@ -264,7 +471,9 @@ For full configuration and usage instructions, see the [Validation & Enforceable
 
 ## Limitations
 
-- **Instruction-Level Enforcement:** The framework operates at the instruction and documentation level. There are no automated runtime blocks preventing a developer or agent from executing unapproved actions.
+- **Instruction-Level Framework:** Orchestra primarily operates through structured instructions, skills, and documentation.
+- **Optional Runtime Guardrails:** Some repository-level checks can be enforced through scripts when explicitly enabled.
+- **Human Review Required:** Guardrails reduce risk but do not replace developer review, secure coding practice, or legal/security review.
 - **Project Profile Requirement:** Governance relies entirely on the accuracy and completeness of the provided project context profile.
 
 ## Collapsed Repository Structure
