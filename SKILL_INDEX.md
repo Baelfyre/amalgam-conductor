@@ -14,6 +14,7 @@
 | Cipher | `cipher` | Security and privacy auditor | Defensive review, RBAC, data protection, sensitive data handling | Offensive or destructive testing is needed | Specialist | None | Caveman, Full Security Review |
 | Dagger | `dagger` | Controlled resilience tester | Destructive, negative, fuzz, adversarial QA, failure-mode testing | Operating in production, lacking explicit approval, or during early dev | Gated | `conductor` | Caveman |
 | Clockwork | `clockwork` | Engineering / Code Structure | OOP architecture, layered architecture, system design, refactoring | Modifying UI layouts, testing security boundaries, or writing documentation | Specialist | None | Compact, Full |
+| Ponytail | `ponytail` | Implementation and Navigation Specialist | Implementation, code editing, validation | Architecture design, UI/UX decisions, security policies | Specialist | None | IMPLEMENTATION_PLAN, CODE_REVIEW, QUICK_FIX |
 
 
 Note: `The Steward` and `The Governor` are governance authorities that evaluate request intent, risk, alignment, and compliance. They do not implement changes or act as execution specialists.

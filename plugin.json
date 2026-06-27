@@ -219,6 +219,23 @@
                 "Compact",
                 "Full"
             ]
+        },
+        {
+            "primary_use": "Implementation, code editing, validation",
+            "slug": "ponytail",
+            "description": "The Implementation and Navigation Specialist. Owns practical implementation work, code navigation, minimal safe edits, refactor containment, and safe code-change boundaries.",
+            "avoid_when": "Architecture design, UI/UX decisions, security policies",
+            "skill_path": "skills/ponytail/SKILL.md",
+            "role": "Implementation and Navigation Specialist",
+            "name": "ponytail",
+            "activation_level": "Specialist",
+            "depends_on": "None",
+            "icon_path": "assets/icons/ponytail.ico",
+            "output_formats": [
+                "IMPLEMENTATION_PLAN",
+                "CODE_REVIEW",
+                "QUICK_FIX"
+            ]
         }
     ]
 }
