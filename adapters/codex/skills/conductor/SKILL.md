@@ -55,7 +55,7 @@ The following gates must be enforced across all orchestration, to prevent contex
 - No implementation handoff.
 - No generated report file unless user explicitly approves writing an artifact.
 - Final output must be findings and fix plan only.
-- Acme must verify `git status` did not change after audit-only tasks.
+- Conductor must verify `git status` did not change after audit-only tasks.
 
 ### 4. Conductor Scalability (Bounded Task Packets)
 **Trigger:** Routing to any specialist execution skill.
@@ -113,10 +113,10 @@ Before routing any request to execution skills, the Conductor **must** perform *
 5. **Release Mode**: For production deployment, public releases, or client delivery. Enforces strict compliance gates; requires complete context and halts on any unresolved flags.
 
 **Gate Rules (for Prototype, Implementation, Audit, and Release modes):**
-- If Steward or Governor returns `BLOCKED` â†’ Conductor **stops**. Returns findings to requester.
-- If Steward or Governor returns `REVISION_REQUIRED` (and mode requires it) â†’ Conductor **pauses**. Returns findings for revision.
-- If Governor sets `human_review_required: true` â†’ Conductor **pauses** until human review completes.
-- If both return `APPROVED`, `ADVISORY_ONLY`, or `NOT_APPLICABLE` â†’ Conductor proceeds to routing.
+- If Steward or Governor returns `BLOCKED` -> Conductor **stops**. Returns findings to requester.
+- If Steward or Governor returns `REVISION_REQUIRED` (and mode requires it) -> Conductor **pauses**. Returns findings for revision.
+- If Governor sets `human_review_required: true` -> Conductor **pauses** until human review completes.
+- If both return `APPROVED`, `ADVISORY_ONLY`, or `NOT_APPLICABLE` -> Conductor proceeds to routing.
 
 **Fast Path:** For trivial requests, typo fixes, formatting-only edits, simple explanations, or low-risk local changes, the Conductor proceeds immediately under a fast path.
 
@@ -131,42 +131,54 @@ Before routing any request to execution skills, the Conductor **must** perform *
 
 ## Task Type Detection & Routing Matrix
 
-Classify the user's request into one of the following Task Types and route it exactly as specified:
+1. **Architecture & Refactoring**
+   -> `clockwork` (for OOP, SOLID, layering, boundary identification) -> `ponytail` (for implementation)
 
-1. **Bug Fix**
-   â†’ `ponytail`
+2. **Database & Persistence**
+   -> `chronicler` (for SQL, schema, ORM, migrations, normalization) -> `ponytail`
 
-2. **Architecture Design**
-   â†’ `clockwork`
+3. **Security & Privacy**
+   -> `cipher` (for RBAC, auth, secrets, API hardening) -> `ponytail`
 
-3. **Backend Development (Feature)**
-   â†’ `clockwork` (only if new architecture/boundaries are needed) â†’ `ponytail`
+4. **UI/UX & Frontend**
+   -> `cloak` (for accessibility, responsive layout, secure UX) -> `ponytail`
 
-4. **Feature Development (General)**
-   â†’ `clockwork` (if boundary needed) â†’ `ponytail`
+5. **QA, Testing & Validation**
+   -> `overseer` (for test strategy, validation gates, release readiness)
 
-5. **Refactoring**
-   â†’ `clockwork` (for boundary identification) â†’ `ponytail` (for implementation)
+6. **Controlled Stress & Resilience**
+   -> `dagger` (for chaos, negative testing, failure scenarios - only when authorized)
 
-6. **Security Review**
-   â†’ `cipher` â†’ `ponytail`
+7. **Documentation & Knowledge**
+   -> `scribe` (for source-backed documentation and prose)
 
-7. **Database & Record Accuracy Work**
-   â†’ `chronicler` (must confirm UI/domain mapping, source links, and asset availability) â†’ `ponytail`
+8. **Diagrams & Visual Modeling**
+   -> `weaver` (for Mermaid/PlantUML, UML, ERD)
 
-**Ponytail Handoff Restriction:**
-Ponytail must not implement factual or curated records until Chronicler confirms source-of-truth fields, domain/interface fields, UI-rendered fields, fallback behavior, source link structure, and asset availability.
+9. **Continuity & Transition Review**
+   -> `arbiter` (for branch drift, validation gaps, merge readiness, source-of-truth uncertainty)
 
-8. **UI/UX Work**
-   â†’ `cloak` â†’ `ponytail`
+10. **General Implementation & Bug Fixes**
+    -> `ponytail` (for safe code navigation and minimal safe edits - no architecture/design decisions)
 
-9. **Documentation**
-   â†’ `scribe`
+### Bounded Routing Rules
 
-*Note: For testing/QA, route to `overseer`.*
+- **Bounded Task Packets:** Conductor must create small, discrete task packets.
+- **Decision First, Implementation Second:** Conductor should route the decision-making specialist first, then `ponytail` only for implementation.
+- **No Monolithic Handoffs:** Conductor must not collapse all work into `ponytail`. Ponytail is the implementation destination, not a general governance or design authority.
+- **Arbiter Safety:** Conductor must not bypass `arbiter` when transition, merge, or validation risk exists.
+- **Secure UX Routing:** Conductor must not route security-sensitive UI concerns only to `cloak`; use `cipher` first, then `cloak`.
+- **Database Safety:** Conductor must not route database-backed implementation directly to `ponytail` without `chronicler` when schema/persistence rules are unclear.
+- **Architecture Safety:** Conductor must not route architecture refactors directly to `ponytail` without `clockwork` when boundaries are unclear.
 
-10. **Continuity / Transition Review**
-   â†’ `arbiter`
+### Routing Examples
+
+- **"Implement feature with new DB table"** -> `chronicler`, `clockwork` if layering is affected, `ponytail`, `overseer`
+- **"Fix UI form layout and validation messages"** -> `cloak`, `cipher` if security-sensitive, `ponytail`, `overseer`
+- **"Review API for abuse and overload protection"** -> `cipher`, `dagger` if controlled scenario expansion is approved, `overseer`
+- **"Refactor service/repository logic"** -> `clockwork`, `ponytail`, `overseer`
+- **"Prepare project documentation"** -> `scribe`, with specialist source-of-truth owner first when technical facts are involved
+- **"After interrupted branch work"** -> `arbiter` before continuing
 
 ## Central Naming Resolution
 Use `aliases.json` in the project root to map old multi-word names (e.g. `cloak-meister`) to their clean clean one-word counterparts (e.g. `cloak`) dynamically. If user prompts or environment states use older names, resolve them to the clean slugs before routing.
