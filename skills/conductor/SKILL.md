@@ -3,7 +3,7 @@ name: conductor
 description: Conductor is the routing and orchestration layer of the Orchestra. Use it for project orientation, multi-skill routing, workflow planning, readiness reviews, or deciding which specialist should handle UI/UX, documentation, diagrams, databases, QA, security/privacy, or gated resilience testing. It chooses the smallest effective skill stack, sequences work by dependency, controls token usage, prevents duplicate reviews, and protects projects from unnecessary or risky actions.
 slug: conductor
 role: Routing and orchestration layer
-primary_use: Project orientation, multi-skill routing, workflow planning
+primary_use: Project orientation, multi-skill routing, workflow planning, access/visibility routing
 avoid_when: A single obvious specialist suffices
 activation_level: Commander
 depends_on: None
