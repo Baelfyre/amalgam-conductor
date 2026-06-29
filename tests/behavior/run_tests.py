@@ -54,15 +54,15 @@ def main():
         enforce_result = subprocess.run([sys.executable, guardrail_script, "--target-dir", temp_dir, "--enabled", "--enforce"], capture_output=True, text=True)
         warn_result = subprocess.run([sys.executable, guardrail_script, "--target-dir", temp_dir, "--enabled"], capture_output=True, text=True)
         
-        redacted_violation = runtime_guardrail.format_secret_violation("mock_violation.txt", 1)
+        redacted_violation = runtime_guardrail.format_suppressed_secret_violation(1)
         if enforce_result.returncode != 1:
             print(f"\033[91mERROR: Guardrail did not fail on violation in enforce mode! (Exit code: {enforce_result.returncode})\033[0m")
             failed = True
         elif warn_result.returncode != 0:
             print(f"\033[91mERROR: Guardrail failed on warning-only mode! (Exit code: {warn_result.returncode})\033[0m")
             failed = True
-        elif "[REDACTED]" not in redacted_violation:
-            print("\033[91mERROR: Guardrail secret formatter did not redact output!\033[0m")
+        elif "Details suppressed" not in redacted_violation:
+            print("\033[91mERROR: Guardrail secret formatter did not suppress details!\033[0m")
             failed = True
         else:
             print("\033[92mSUCCESS: Guardrail warning-first, enforcement, and redaction tests passed.\033[0m")
