@@ -7,8 +7,8 @@ import json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import helpers
 
-def format_suppressed_secret_violation(count):
-    return f"SECRET EXPOSURE detected in {count} location(s). Details suppressed."
+def format_suppressed_guardrail_notice():
+    return "Restricted pattern detected. Details suppressed."
 
 def main():
     parser = argparse.ArgumentParser()
@@ -30,7 +30,7 @@ def main():
         helpers.write_color_host('INFO', 'Enforcement is disabled (warning-only mode). Warnings will not block commit.')
         
     violations = []
-    secret_violation_count = 0
+    restricted_pattern_found = False
     files_to_scan = []
     
     if args.staged_only:
@@ -112,7 +112,7 @@ def main():
         for i, line in enumerate(lines):
             for pattern in secret_patterns.values():
                 if pattern.search(line):
-                    secret_violation_count += 1
+                    restricted_pattern_found = True
                     
             if re.search(r'package\.json|dependencies|plugin\.json', rel):
                 for p in copyleft_patterns:
@@ -150,12 +150,11 @@ def main():
                     if re.search(re.escape(ln), line):
                         violations.append(f"STALE REFERENCE DETECTED (Legacy name '{ln}') in {item['Relative']}:L{i+1} -> {line.strip()}")
                         
-    total_violations = len(violations) + secret_violation_count
-    if total_violations:
+    if violations or restricted_pattern_found:
         if is_enforce:
-            helpers.write_color_host('ERROR', f"Guardrail scan failed with {total_violations} safety violations:")
-            if secret_violation_count:
-                helpers.write_color_host('ERROR', f" - {format_suppressed_secret_violation(secret_violation_count)}")
+            helpers.write_color_host('ERROR', "Guardrail scan failed with safety violations:")
+            if restricted_pattern_found:
+                helpers.write_color_host('ERROR', f" - {format_suppressed_guardrail_notice()}")
             for v in violations:
                 helpers.write_color_host('ERROR', f" - {v}")
             print("\n\033[91m[WHAT FAILED] Repository files or changes violated Orchestra's runtime guardrails.\033[0m")
@@ -163,9 +162,9 @@ def main():
             print("\033[93m[HOW TO FIX IT] Review the specific files and line numbers flagged above. Address the violations by removing sensitive strings, cleaning up commands, or replacing legacy names with clean slugs. To run locally without blocking, disable enforcement or omit the --enforce parameter.\033[0m")
             sys.exit(1)
         else:
-            helpers.write_color_host('WARNING', f"Guardrail scan found {total_violations} potential warnings (Warning-Only Mode):")
-            if secret_violation_count:
-                helpers.write_color_host('WARNING', f" - {format_suppressed_secret_violation(secret_violation_count)}")
+            helpers.write_color_host('WARNING', "Guardrail scan found potential warnings (Warning-Only Mode):")
+            if restricted_pattern_found:
+                helpers.write_color_host('WARNING', f" - {format_suppressed_guardrail_notice()}")
             for v in violations:
                 helpers.write_color_host('WARNING', f" - {v}")
             print("\n\033[93m[WHAT FAILED] Potential safety warnings were detected by the guardrail scanner.\033[0m")
