@@ -108,7 +108,7 @@ def main():
         for i, line in enumerate(lines):
             for key, pattern in secret_patterns.items():
                 if pattern.search(line):
-                    violations.append(f"SECRET EXPOSURE ({key}) in {item['Relative']}:L{i+1} -> {line.strip()}")
+                    violations.append(f"SECRET EXPOSURE ({key}) in {item['Relative']}:L{i+1} -> [REDACTED]")
                     
             if re.search(r'package\.json|dependencies|plugin\.json', rel):
                 for p in copyleft_patterns:
@@ -118,7 +118,7 @@ def main():
             for p in pii_patterns:
                 if p.search(line):
                     has_pii = True
-                    violations.append(f"PII SENSITIVE FIELD DETECTED ({line.strip()}) in {item['Relative']}:L{i+1}.")
+                    violations.append(f"PII SENSITIVE FIELD DETECTED in {item['Relative']}:L{i+1} -> [REDACTED].")
                     
             for key, pattern in destructive_patterns.items():
                 if pattern.search(line):

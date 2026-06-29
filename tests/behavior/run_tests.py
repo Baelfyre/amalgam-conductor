@@ -46,11 +46,18 @@ def main():
     os.makedirs(temp_dir, exist_ok=True)
     try:
         violation_file = os.path.join(temp_dir, "mock_secrets.txt")
+        mock_secret = "AKIA" + "1234567890ABCDEF"
         with open(violation_file, "w", encoding="utf-8") as f:
-            f.write("AWS_SECRET = AKIA1234567890ABCDEF")
+            f.write(f"AWS_SECRET = {mock_secret}")
         
-        enforce_result = subprocess.run([sys.executable, guardrail_script, "--target-dir", temp_dir, "--enabled", "--enforce"])
-        warn_result = subprocess.run([sys.executable, guardrail_script, "--target-dir", temp_dir, "--enabled"])
+        enforce_result = subprocess.run([sys.executable, guardrail_script, "--target-dir", temp_dir, "--enabled", "--enforce"], capture_output=True, text=True)
+        warn_result = subprocess.run([sys.executable, guardrail_script, "--target-dir", temp_dir, "--enabled"], capture_output=True, text=True)
+        combined_output = "".join([
+            enforce_result.stdout,
+            enforce_result.stderr,
+            warn_result.stdout,
+            warn_result.stderr,
+        ])
         
         if enforce_result.returncode != 1:
             print(f"\033[91mERROR: Guardrail did not fail on violation in enforce mode! (Exit code: {enforce_result.returncode})\033[0m")
@@ -58,8 +65,11 @@ def main():
         elif warn_result.returncode != 0:
             print(f"\033[91mERROR: Guardrail failed on warning-only mode! (Exit code: {warn_result.returncode})\033[0m")
             failed = True
+        elif mock_secret in combined_output:
+            print("\033[91mERROR: Guardrail output leaked mock secret!\033[0m")
+            failed = True
         else:
-            print("\033[92mSUCCESS: Guardrail warning-first and enforcement tests passed.\033[0m")
+            print("\033[92mSUCCESS: Guardrail warning-first, enforcement, and redaction tests passed.\033[0m")
     finally:
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)

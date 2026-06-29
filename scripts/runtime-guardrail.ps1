@@ -70,7 +70,7 @@ if ($filesToScan.Count -eq 0) {
 # 2. Scans
 foreach ($item in $filesToScan) {
     # Skip self and documentation when scanning for their own documented patterns
-    if ($item.Relative -match 'runtime-guardrail\.ps1|VALIDATION\.md') {
+    if ($item.Relative -match 'runtime[_-]guardrail\.(ps1|py)|VALIDATION\.md') {
         continue
     }
 
@@ -89,7 +89,7 @@ foreach ($item in $filesToScan) {
         $pattern = $secretPatterns[$key]
         for ($i = 0; $i -lt $lines.Count; $i++) {
             if ($lines[$i] -match $pattern) {
-                $violations += "SECRET EXPOSURE ($key) in $($item.Relative):L$($i + 1) -> $($lines[$i].Trim())"
+                $violations += "SECRET EXPOSURE ($key) in $($item.Relative):L$($i + 1) -> [REDACTED]"
             }
         }
     }
@@ -113,7 +113,7 @@ foreach ($item in $filesToScan) {
         foreach ($p in $piiPatterns) {
             if ($lines[$i] -match $p) {
                 $hasPii = $true
-                $violations += "PII SENSITIVE FIELD DETECTED ($($lines[$i].Trim())) in $($item.Relative):L$($i + 1)."
+                $violations += "PII SENSITIVE FIELD DETECTED in $($item.Relative):L$($i + 1) -> [REDACTED]."
             }
         }
     }
