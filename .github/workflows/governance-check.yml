@@ -1,0 +1,65 @@
+name: Governance Check
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  governance-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Show Python version
+        run: python --version
+
+      - name: Create Artifacts Directory
+        run: mkdir -p artifacts
+
+      - name: Run Phase 1 Governance Check
+        run: |
+          python scripts/governance_check.py > artifacts/governance_report.txt
+          cat artifacts/governance_report.txt
+
+      - name: Run Phase 2 Dagger Guardrail Simulation Test
+        run: |
+          python scripts/test_dagger_guardrail.py > artifacts/dagger_guardrail_report.txt
+          cat artifacts/dagger_guardrail_report.txt
+
+      - name: Run Governance Behavior Tests
+        run: |
+          python tests/behavior/evaluate_governance.py > artifacts/evaluate_governance_report.txt
+          cat artifacts/evaluate_governance_report.txt
+
+      - name: Run General Behavior Tests
+        run: |
+          python tests/behavior/run_tests.py > artifacts/run_tests_report.txt
+          cat artifacts/run_tests_report.txt
+
+      - name: Validate plugin.json Syntax
+        run: python -m json.tool plugin.json > /dev/null
+
+      - name: Generate CI Summary
+        run: |
+          echo "# Governance Validation Report" >> $GITHUB_STEP_SUMMARY
+          echo "## Advisory Mode: ON" >> $GITHUB_STEP_SUMMARY
+          echo "All structural, governance, and simulation checks passed successfully." >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Governance Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-validation-report
+          path: artifacts/
+          retention-days: 14

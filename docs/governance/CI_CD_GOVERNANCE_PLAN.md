@@ -13,9 +13,16 @@ This document outlines the governance validation foundation for the Orchestra re
 * Produce a structured guardrail report for humans and future CI artifacts.
 * Preserve the manifest warning until CI/CD wiring exists.
 
+## Phase 3 Objectives
+* Create `.github/workflows/governance-check.yml`.
+* Configure workflow triggers (`pull_request`, `push` to `main`, `workflow_dispatch`).
+* Execute existing validation scripts inside CI.
+* Generate and upload a governance report artifact.
+* Maintain advisory mode (no deployments, no releases).
+
 ## Required Governance Checks
 
-The following checks are part of the initial governance validation plan. In Phase 1, they are evaluated in advisory mode (non-blocking).
+The following checks are part of the initial governance validation plan. In Phase 1-3, they are evaluated in advisory mode (non-blocking for deployments, though safe technical failures will fail the CI check).
 
 ### 1. Code & Quality Gates
 * **Tests:** Required tests must pass.
@@ -37,4 +44,4 @@ The following checks are part of the initial governance validation plan. In Phas
 ## Execution
 Validation is currently performed via the non-destructive `scripts/governance_check.py` script plus the simulation-only `scripts/dagger_guardrail.py` validator and `scripts/test_dagger_guardrail.py`.
 
-Strict CI wiring for Dagger remains deferred to Phase 3.
+Phase 3 has successfully wired these scripts into an automated GitHub Actions CI workflow (`.github/workflows/governance-check.yml`). The workflow is purely advisory, runs all validation gates on push/PR, and generates a unified report artifact (`governance-validation-report`). Strict release enforcement (Phase 4) and live Dagger promotion are still deferred until Arbiter calibration is complete.
