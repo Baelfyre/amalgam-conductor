@@ -4,7 +4,33 @@
 
 Define the policy and enforcement plan for moving Orchestra from advisory governance checks to strict merge and release gates.
 
-This document is planning-only. It does not make CI strict, does not change branch protection, does not promote Dagger, and does not add deployment or release automation.
+This document began as planning-only. Phase 6 Stage 1 now enables strict deterministic CI failures, but it still does not change branch protection, does not require signed commits, does not promote Dagger, and does not add deployment or release automation.
+
+## Phase 6 Stage 1 Status
+
+Phase 6 Stage 1 implements strict deterministic governance gates in CI for:
+
+- invalid or missing `plugin.json`
+- missing required governance validation scripts
+- `scripts/governance_check.py --strict` deterministic failures
+- Dagger guardrail expectation regressions
+- behavior validation failure
+- metadata and structure drift
+- significant changes without `CHANGELOG.md`
+- forbidden generated artifacts, runtime logs, cache files, or local runtime folders
+- missing required governance documentation
+
+These areas remain advisory in Stage 1:
+
+- broad but present changelog entries
+- wording precision in docs
+- external GitHub runner warnings
+- Node runtime deprecation warnings from official GitHub Actions
+- Arbiter conclusions that still require human judgment
+- signed commit policy
+- branch protection policy
+- pull request review policy
+- release approval policy
 
 ## Current Advisory Governance State
 
@@ -67,7 +93,7 @@ Recommended release gates before any public release, distribution, or release au
 
 ## Checks Proposed for Strict Enforcement
 
-These checks are good candidates to become blocking in a later implementation phase:
+These checks are now blocking in Stage 1 strict CI:
 
 - workflow pass/fail for `Governance Check`
 - manifest and metadata consistency

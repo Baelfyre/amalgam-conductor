@@ -29,9 +29,9 @@ jobs:
       - name: Create Artifacts Directory
         run: mkdir -p artifacts
 
-      - name: Run Phase 1 Governance Check
+      - name: Run Stage 1 Strict Governance Check
         run: |
-          python scripts/governance_check.py > artifacts/governance_report.txt
+          python scripts/governance_check.py --strict > artifacts/governance_report.txt
           cat artifacts/governance_report.txt
 
       - name: Run Phase 2 Dagger Guardrail Simulation Test
@@ -55,8 +55,8 @@ jobs:
       - name: Generate CI Summary
         run: |
           echo "# Governance Validation Report" >> $GITHUB_STEP_SUMMARY
-          echo "## Advisory Mode: ON" >> $GITHUB_STEP_SUMMARY
-          echo "Governance validation completed. Review the uploaded artifact and workflow logs for advisory warnings, deferred checks, and non-blocking governance findings." >> $GITHUB_STEP_SUMMARY
+          echo "## Stage 1 Strict Deterministic Gates: ON" >> $GITHUB_STEP_SUMMARY
+          echo "Governance validation completed with Stage 1 strict deterministic gates. Review artifacts and logs for advisory findings that remain non-blocking." >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Governance Artifacts
         if: always()

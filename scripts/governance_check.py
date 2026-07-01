@@ -1,9 +1,43 @@
-import os
-import json
+import argparse
 import fnmatch
+import json
+import os
 import subprocess
 import sys
+import tempfile
+from pathlib import Path
 
+
+REQUIRED_ROOT_FILES = [
+    "plugin.json",
+    "README.md",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "LICENSE",
+]
+
+REQUIRED_GOVERNANCE_DOCS = [
+    "AGENTS.md",
+    "docs/CONTRIBUTING.md",
+    "docs/governance/CI_CD_GOVERNANCE_PLAN.md",
+    "docs/governance/ARBITER_CALIBRATION_PLAN.md",
+    "docs/governance/DAGGER_RUNTIME_GUARDRAIL_GAP.md",
+    "docs/governance/STRICT_GOVERNANCE_RELEASE_GATE_PLAN.md",
+]
+
+REQUIRED_VALIDATION_SCRIPTS = [
+    "scripts/governance_check.py",
+    "scripts/dagger_guardrail.py",
+    "scripts/test_dagger_guardrail.py",
+    "scripts/preflight_sync_check.py",
+    "tests/behavior/evaluate_governance.py",
+    "tests/behavior/run_tests.py",
+]
+
+STRICT_VALIDATOR_SCRIPTS = [
+    "scripts/validate_structure.py",
+    "scripts/validate_manifest.py",
+]
 
 SIGNIFICANT_CHANGE_PATTERNS = [
     ".github/workflows/**",
@@ -25,6 +59,25 @@ IGNORED_CHANGE_PATTERNS = [
     "*.log",
     "*.tmp",
 ]
+
+FORBIDDEN_REPO_PATTERNS = [
+    ".agents/**",
+    ".amalgam/**",
+    ".codex/**",
+    "artifacts/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    "*.log",
+    "*.tmp",
+    "*.pyc",
+    "*.pyo",
+]
+
+FORBIDDEN_EXTENSIONS = [".env", ".pem", ".key"]
+ALLOWED_RUNTIME_PATHS = {
+    ".agents/plugins/marketplace.json",
+}
 
 
 def run_git(repo_root, *args):
@@ -53,6 +106,13 @@ def get_changed_paths(repo_root, *args):
     return normalize_paths(result.stdout.splitlines())
 
 
+def get_repo_files(repo_root):
+    result = run_git(repo_root, "ls-files", "--cached", "--others", "--exclude-standard")
+    if result.returncode != 0:
+        return []
+    return normalize_paths(result.stdout.splitlines())
+
+
 def is_ignored_change(path):
     return any(fnmatch.fnmatch(path, pattern) for pattern in IGNORED_CHANGE_PATTERNS)
 
@@ -61,6 +121,24 @@ def is_significant_change(path):
     if path == "CHANGELOG.md" or is_ignored_change(path):
         return False
     return any(fnmatch.fnmatch(path, pattern) for pattern in SIGNIFICANT_CHANGE_PATTERNS)
+
+
+def is_forbidden_repo_path(path):
+    if path in ALLOWED_RUNTIME_PATHS:
+        return False
+    return any(fnmatch.fnmatch(path, pattern) for pattern in FORBIDDEN_REPO_PATTERNS)
+
+
+def get_exit_code(strict_mode, errors):
+    if strict_mode and errors > 0:
+        return 1
+    return 0
+
+
+def get_changelog_issue(significant_changes, changelog_changed):
+    if significant_changes and not changelog_changed:
+        return "Significant changes were detected without a matching CHANGELOG.md update."
+    return None
 
 
 def get_changelog_freshness(repo_root):
@@ -97,130 +175,329 @@ def get_changelog_freshness(repo_root):
     changelog_changed = "CHANGELOG.md" in combined_changes
     return comparison_label, significant_changes, changelog_changed
 
+
+def print_issue(level, path, reason, remediation):
+    print(f"  [{level}] {path}: {reason}")
+    if remediation:
+        print(f"         Remediation: {remediation}")
+
+
+def print_pass(path, detail):
+    print(f"  [PASS] {path}: {detail}")
+
+
+def record_failure(counters, path, reason, remediation):
+    counters["errors"] += 1
+    print_issue("FAIL", path, reason, remediation)
+
+
+def record_warning(counters, path, reason, remediation):
+    counters["warnings"] += 1
+    print_issue("WARN", path, reason, remediation)
+
+
+def run_python_script(repo_root, relative_path):
+    script_path = os.path.join(repo_root, relative_path.replace("/", os.sep))
+    return subprocess.run(
+        [sys.executable, script_path],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def run_strict_validators(repo_root, counters):
+    print("\n[8] Running strict metadata validators...")
+    for script_path in STRICT_VALIDATOR_SCRIPTS:
+        result = run_python_script(repo_root, script_path)
+        if result.returncode == 0:
+            print_pass(script_path, "Validator passed.")
+            continue
+
+        record_failure(
+            counters,
+            script_path,
+            "Deterministic metadata or structure validation failed.",
+            f"Run `python {script_path}` locally and resolve the reported manifest, structure, or output-format drift.",
+        )
+        tail = (result.stdout or result.stderr).strip()
+        if tail:
+            preview = tail.splitlines()[-1]
+            print(f"         Validator output: {preview}")
+
+
+def run_dagger_contract_check(repo_root, counters):
+    print("\n[9] Checking Dagger live-execution block...")
+    script_path = os.path.join(repo_root, "scripts", "dagger_guardrail.py")
+
+    with tempfile.TemporaryDirectory(prefix="governance-dagger-check-") as temp_dir:
+        pass_report = os.path.join(temp_dir, "pass-report.json")
+        pass_result = subprocess.run(
+            [
+                sys.executable,
+                script_path,
+                "--action",
+                "delete_file",
+                "--target-path",
+                "README.md",
+                "--confirm",
+                "--dry-run",
+                "--rollback-plan",
+                "restore from git",
+                "--report-file",
+                pass_report,
+            ],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        fail_report = os.path.join(temp_dir, "blocked-report.json")
+        blocked_result = subprocess.run(
+            [
+                sys.executable,
+                script_path,
+                "--action",
+                "delete_file",
+                "--target-path",
+                "README.md",
+                "--confirm",
+                "--rollback-plan",
+                "restore from git",
+                "--report-file",
+                fail_report,
+            ],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        try:
+            pass_payload = json.loads(Path(pass_report).read_text(encoding="utf-8"))
+            blocked_payload = json.loads(Path(fail_report).read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError):
+            record_failure(
+                counters,
+                "scripts/dagger_guardrail.py",
+                "Guardrail report could not be parsed during strict validation.",
+                "Keep the guardrail JSON output stable and machine-readable.",
+            )
+            return
+
+    if pass_result.returncode != 0:
+        record_failure(
+            counters,
+            "scripts/dagger_guardrail.py",
+            "Expected dry-run validation no longer passes.",
+            "Restore the current simulation-only guardrail behavior for approved dry-run requests.",
+        )
+        return
+
+    if blocked_result.returncode == 0:
+        record_failure(
+            counters,
+            "scripts/dagger_guardrail.py",
+            "A destructive request without --dry-run no longer fails closed.",
+            "Restore the live-execution block and require --dry-run before validation passes.",
+        )
+        return
+
+    if pass_payload.get("live_execution") != "blocked" or blocked_payload.get("live_execution") != "blocked":
+        record_failure(
+            counters,
+            "scripts/dagger_guardrail.py",
+            "Dagger no longer reports live execution as blocked.",
+            "Keep `live_execution` set to `blocked` until a later Dagger promotion phase explicitly changes it.",
+        )
+        return
+
+    print_pass("scripts/dagger_guardrail.py", "Live destructive execution remains blocked in both pass and fail paths.")
+
+
 def main():
-    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    
+    parser = argparse.ArgumentParser(description="Validate Orchestra governance checks in advisory or strict mode.")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Enable Stage 1 strict deterministic governance failures.",
+    )
+    args = parser.parse_args()
+
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    mode_label = "Stage 1 strict deterministic gates" if args.strict else "Advisory Mode: ON (Non-blocking)"
+
     print("========================================")
-    print(" Orchestra CI/CD Governance Check (Phase 1) ")
-    print(" Advisory Mode: ON (Non-blocking)")
+    print(" Orchestra CI/CD Governance Check ")
+    print(f" {mode_label}")
     print("========================================\n")
 
-    warnings = 0
-    errors = 0
+    counters = {"warnings": 0, "errors": 0}
 
-    # 1. Required Files Check
-    print("[1] Checking required files...")
-    required_files = [
-        "plugin.json",
-        "README.md",
-        "CHANGELOG.md",
-        "SECURITY.md",
-        "LICENSE"
-    ]
-    for rf in required_files:
-        path = os.path.join(repo_root, rf)
-        if os.path.exists(path):
-            print(f"  [PASS] {rf} exists.")
+    print("[1] Checking required root files...")
+    for relative_path in REQUIRED_ROOT_FILES:
+        full_path = os.path.join(repo_root, relative_path.replace("/", os.sep))
+        if os.path.exists(full_path):
+            print_pass(relative_path, "File exists.")
         else:
-            print(f"  [WARN] Missing required file: {rf}")
-            warnings += 1
+            record_failure(
+                counters,
+                relative_path,
+                "Required repository file is missing.",
+                "Restore the file in the repository before merging.",
+            )
 
-    # 2. Plugin.json Validation
-    print("\n[2] Validating plugin.json...")
+    print("\n[2] Checking required governance documents...")
+    for relative_path in REQUIRED_GOVERNANCE_DOCS:
+        full_path = os.path.join(repo_root, relative_path.replace("/", os.sep))
+        if os.path.exists(full_path):
+            print_pass(relative_path, "Governance document exists.")
+        else:
+            record_failure(
+                counters,
+                relative_path,
+                "Required governance documentation is missing.",
+                "Restore the missing governance document before merging.",
+            )
+
+    print("\n[3] Checking required validation scripts...")
+    for relative_path in REQUIRED_VALIDATION_SCRIPTS:
+        full_path = os.path.join(repo_root, relative_path.replace("/", os.sep))
+        if os.path.exists(full_path):
+            print_pass(relative_path, "Validation entrypoint exists.")
+        else:
+            record_failure(
+                counters,
+                relative_path,
+                "Required governance validation script is missing.",
+                "Restore the missing validation script before merging.",
+            )
+
+    print("\n[4] Validating plugin.json...")
     plugin_path = os.path.join(repo_root, "plugin.json")
     plugin_data = None
-    if os.path.exists(plugin_path):
-        try:
-            with open(plugin_path, "r", encoding="utf-8") as f:
-                plugin_data = json.load(f)
-            print("  [PASS] plugin.json is valid JSON.")
-        except json.JSONDecodeError as e:
-            print(f"  [FAIL] plugin.json is invalid JSON: {e}")
-            errors += 1
-    else:
-        print("  [FAIL] plugin.json not found.")
-        errors += 1
+    try:
+        with open(plugin_path, "r", encoding="utf-8") as handle:
+            plugin_data = json.load(handle)
+        print_pass("plugin.json", "Valid JSON.")
+    except FileNotFoundError:
+        record_failure(
+            counters,
+            "plugin.json",
+            "Manifest file is missing.",
+            "Restore plugin.json before merging.",
+        )
+    except json.JSONDecodeError as exc:
+        record_failure(
+            counters,
+            "plugin.json",
+            f"Invalid JSON: {exc}",
+            "Fix the JSON syntax and re-run validation.",
+        )
 
-    # 3. Skills Validation
     if plugin_data and "skills" in plugin_data:
-        print("\n[3] Validating registered skills...")
+        print("\n[5] Validating registered skills...")
         for skill in plugin_data.get("skills", []):
             skill_name = skill.get("name")
             if not skill_name:
+                record_failure(
+                    counters,
+                    "plugin.json",
+                    "A registered skill is missing its `name` field.",
+                    "Add the missing skill name and keep manifest metadata consistent.",
+                )
                 continue
+
             skill_file_path = os.path.join(repo_root, "skills", skill_name, "SKILL.md")
             if os.path.exists(skill_file_path):
-                print(f"  [PASS] Skill validated: {skill_name}")
+                print_pass(f"skills/{skill_name}/SKILL.md", "Registered skill file exists.")
             else:
-                print(f"  [FAIL] Missing SKILL.md for registered skill: {skill_name}")
-                errors += 1
+                record_failure(
+                    counters,
+                    f"skills/{skill_name}/SKILL.md",
+                    "Registered skill file is missing.",
+                    "Restore the skill file or remove the stale manifest entry.",
+                )
 
-    # 4. Commands Validation
     if plugin_data and "commands" in plugin_data:
-        print("\n[4] Validating registered commands...")
-        for cmd in plugin_data.get("commands", []):
-            cmd_path = os.path.join(repo_root, "commands", f"{cmd}.md")
-            if os.path.exists(cmd_path):
-                print(f"  [PASS] Command file validated: {cmd}")
+        print("\n[6] Validating registered commands...")
+        for command_name in plugin_data.get("commands", []):
+            command_path = os.path.join(repo_root, "commands", f"{command_name}.md")
+            if os.path.exists(command_path):
+                print_pass(f"commands/{command_name}.md", "Registered command file exists.")
             else:
-                print(f"  [FAIL] Missing command file for: {cmd}")
-                errors += 1
+                record_failure(
+                    counters,
+                    f"commands/{command_name}.md",
+                    "Registered command file is missing.",
+                    "Restore the command file or remove the stale manifest entry.",
+                )
 
-    # 5. Output Templates Check
-    print("\n[5] Checking output templates...")
-    templates_dir = os.path.join(repo_root, "templates")
-    if os.path.exists(templates_dir) and os.listdir(templates_dir):
-        print("  [PASS] Output templates directory is populated.")
-    else:
-        print("  [WARN] Output templates directory is missing or empty.")
-        warnings += 1
-
-    # 6. Secrets / Forbidden Files Check
-    print("\n[6] Checking for forbidden files (secrets)...")
-    forbidden_extensions = [".env", ".pem", ".key"]
-    found_forbidden = []
-    for root, dirs, files in os.walk(repo_root):
-        if ".git" in root or ".agents" in root:
+    print("\n[7] Checking forbidden committed files...")
+    repo_files = get_repo_files(repo_root)
+    forbidden_files = []
+    for relative_path in repo_files:
+        if is_forbidden_repo_path(relative_path):
+            forbidden_files.append(relative_path)
             continue
-        for file in files:
-            if any(file.endswith(ext) for ext in forbidden_extensions):
-                found_forbidden.append(os.path.relpath(os.path.join(root, file), repo_root))
-    
-    if not found_forbidden:
-        print("  [PASS] No forbidden files detected.")
-    else:
-        for f in found_forbidden:
-            print(f"  [FAIL] Forbidden file detected: {f}")
-            errors += 1
+        if any(relative_path.endswith(ext) for ext in FORBIDDEN_EXTENSIONS):
+            forbidden_files.append(relative_path)
 
-    # 7. Changelog Freshness Check
-    print("\n[7] Checking changelog freshness...")
+    if forbidden_files:
+        for relative_path in forbidden_files:
+            record_failure(
+                counters,
+                relative_path,
+                "Forbidden generated artifact, runtime file, cache file, or secret-like file is present in repository content.",
+                "Remove the file from version control and keep it ignored locally if it is runtime-only.",
+            )
+    else:
+        print_pass("repository-content", "No forbidden generated artifacts, runtime folders, caches, or secret-like files detected.")
+
+    print("\n[7b] Checking changelog freshness...")
     comparison_label, freshness_state, freshness_meta = get_changelog_freshness(repo_root)
     if comparison_label is None:
-        print(f"  [WARN] {freshness_meta}")
-        warnings += 1
+        record_warning(
+            counters,
+            "CHANGELOG.md",
+            freshness_meta,
+            "Verify git history locally if changelog freshness needs review.",
+        )
     else:
         significant_changes = freshness_state
         changelog_changed = freshness_meta
-        if significant_changes and not changelog_changed:
+        changelog_issue = get_changelog_issue(significant_changes, changelog_changed)
+        if changelog_issue:
             preview = ", ".join(significant_changes[:5])
             if len(significant_changes) > 5:
                 preview += ", ..."
-            print(f"  [WARN] Significant changes detected in {comparison_label}, but CHANGELOG.md was not updated.")
-            print(f"  [WARN] Significant paths: {preview}")
-            warnings += 1
+            record_failure(
+                counters,
+                "CHANGELOG.md",
+                f"{changelog_issue} Comparison: {comparison_label}. Significant paths: {preview}",
+                "Add a focused CHANGELOG.md entry for the significant repository changes.",
+            )
         elif significant_changes:
-            print(f"  [PASS] CHANGELOG.md updated alongside significant changes detected in {comparison_label}.")
+            print_pass("CHANGELOG.md", f"Updated alongside significant changes detected in {comparison_label}.")
         else:
-            print(f"  [PASS] No significant changed files requiring a CHANGELOG.md update were detected in {comparison_label}.")
+            print_pass("CHANGELOG.md", f"No significant changed files requiring a changelog update were detected in {comparison_label}.")
+
+    if args.strict:
+        run_strict_validators(repo_root, counters)
+        run_dagger_contract_check(repo_root, counters)
 
     print("\n========================================")
-    print(f" Summary: {errors} Errors, {warnings} Warnings")
-    print(" Status: ADVISORY MODE (Returning Exit Code 0)")
+    print(f" Summary: {counters['errors']} Errors, {counters['warnings']} Warnings")
+    if args.strict:
+        print(" Status: Stage 1 strict deterministic gates")
+    else:
+        print(" Status: ADVISORY MODE (Returning Exit Code 0)")
     print("========================================")
-    
-    # Phase 1: Always return 0 unless instructed otherwise
-    sys.exit(0)
+
+    sys.exit(get_exit_code(args.strict, counters["errors"]))
+
 
 if __name__ == "__main__":
     main()

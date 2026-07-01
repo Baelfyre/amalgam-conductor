@@ -28,6 +28,9 @@ Changes after `v1.0.1` currently tracked in this checkout:
 - Reclassified the accepted Phase 4 work as Phase 4A (Arbiter calibration planning) and Phase 4B (Arbiter output contract alignment) to reflect that it went beyond planning-only work.
 - Documented that CI strictness remains deferred until Arbiter calibration is accepted.
 - Added a Phase 5 strict governance release gate planning document covering merge gates, release gates, branch protection, signed commit policy, Arbiter review policy, and emergency bypass planning.
+- Enabled Phase 6 Stage 1 strict deterministic governance gates in CI while keeping subjective Arbiter findings advisory.
+- Added `scripts/governance_check.py --strict` support, strict Dagger live-execution contract checks, and a small governance-check helper self-test.
+- Updated the Governance Check workflow summary and execution path for Stage 1 strict deterministic enforcement without adding deployment or release automation.
 
 ## v1.0.1 - Codex compatibility adapter (2026-06-21)
 

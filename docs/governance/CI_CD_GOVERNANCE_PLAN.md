@@ -32,6 +32,13 @@ This document outlines the governance validation foundation for the Orchestra re
 * Document recommended `main` branch protection, bypass, signed-commit, pull-request-review, and Arbiter-review policy.
 * Keep CI advisory and Dagger simulation-only until the strict gate plan is explicitly accepted.
 
+## Phase 6 Objectives
+* Enable Stage 1 strict deterministic governance failures in CI.
+* Keep subjective Arbiter judgment advisory.
+* Keep CI non-deployment and non-release.
+* Keep Dagger simulation-only and unpromoted.
+* Defer branch protection, signed commits, and release automation to later phases.
+
 ## Required Governance Checks
 
 The following checks are part of the initial governance validation plan. In Phase 1-3, they are evaluated in advisory mode (non-blocking for deployments, though safe technical failures will fail the CI check).
@@ -64,4 +71,6 @@ Phase 3 has successfully wired these scripts into an automated GitHub Actions CI
 
 Phase 4 calibration is documented in `docs/governance/ARBITER_CALIBRATION_PLAN.md`. The accepted Phase 4 record is split as Phase 4A (calibration planning) and Phase 4B (Arbiter output contract alignment). CI remains advisory, Dagger remains simulation-only and unpromoted, and strict enforcement remains deferred until Arbiter calibration is stable and explicitly accepted.
 
-Phase 5 planning is documented in `docs/governance/STRICT_GOVERNANCE_RELEASE_GATE_PLAN.md`. It defines the proposed strict merge and release policy, but it does not enable enforcement yet.
+Phase 5 planning is documented in `docs/governance/STRICT_GOVERNANCE_RELEASE_GATE_PLAN.md`.
+
+Phase 6 Stage 1 enables strict deterministic governance failures through `python scripts/governance_check.py --strict` inside `.github/workflows/governance-check.yml`. Branch protection, signed commits, pull request review policy, and release automation are still deferred.
