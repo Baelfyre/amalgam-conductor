@@ -157,6 +157,8 @@ Current state and recommendation:
 - the repository ruleset currently includes `required_signatures`
 - this phase did not broaden or remove that existing setting
 - confirm maintainer and contributor signing readiness before making signed-commit policy a broader rollout requirement in later phases
+- Phase 7.6 records the current solo-maintainer readiness state in `docs/governance/SIGNED_COMMIT_READINESS.md`
+- current readiness is not complete: recent commits remain unsigned and the maintainer signing workflow still requires manual setup
 
 ## Dependabot Auto-Merge Readiness
 
