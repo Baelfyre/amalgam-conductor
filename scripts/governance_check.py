@@ -106,8 +106,8 @@ def get_changed_paths(repo_root, *args):
     return normalize_paths(result.stdout.splitlines())
 
 
-def get_repo_files(repo_root):
-    result = run_git(repo_root, "ls-files", "--cached", "--others", "--exclude-standard")
+def get_tracked_repo_files(repo_root):
+    result = run_git(repo_root, "ls-files", "--cached")
     if result.returncode != 0:
         return []
     return normalize_paths(result.stdout.splitlines())
@@ -436,7 +436,7 @@ def main():
                 )
 
     print("\n[7] Checking forbidden committed files...")
-    repo_files = get_repo_files(repo_root)
+    repo_files = get_tracked_repo_files(repo_root)
     forbidden_files = []
     for relative_path in repo_files:
         if is_forbidden_repo_path(relative_path):

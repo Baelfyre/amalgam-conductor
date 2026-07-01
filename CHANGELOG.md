@@ -31,6 +31,7 @@ Changes after `v1.0.1` currently tracked in this checkout:
 - Enabled Phase 6 Stage 1 strict deterministic governance gates in CI while keeping subjective Arbiter findings advisory.
 - Added `scripts/governance_check.py --strict` support, strict Dagger live-execution contract checks, and a small governance-check helper self-test.
 - Updated the Governance Check workflow summary and execution path for Stage 1 strict deterministic enforcement without adding deployment or release automation.
+- Corrected strict forbidden-file scanning so untracked CI-generated artifacts do not fail repository-content checks, while tracked forbidden files still block Stage 1 strict CI.
 
 ## v1.0.1 - Codex compatibility adapter (2026-06-21)
 
